@@ -4013,6 +4013,11 @@ export class SongEditor
 		if (closed) {
 			this._lastPrompt = null;
 			this.doc.prompt = null;
+			// A pane that removed its own focused control (import swaps its
+			// DOM for a loading view) leaves focus on <body>, where global
+			// shortcuts such as Ctrl+O are not routed. Hand focus back.
+			const active = document.activeElement;
+			if (active === null || active === document.body) this.refocusStage();
 		}
 		return closed;
 	}
