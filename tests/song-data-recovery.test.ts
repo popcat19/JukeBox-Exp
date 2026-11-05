@@ -15,7 +15,7 @@ import { BrowserHistoryManager } from "../editor/core/history-manager";
 import { SongRecovery } from "../editor/io/song-recovery";
 import {
 	createCustomSampleHandler,
-	createCustomSampleTransaction,
+	createStagedSampleHandler,
 	decodeEditorSong,
 } from "../editor/song-custom-samples";
 import { toJukeboxExpV2Json } from "../synth/formats/jukebox-exp-v2";
@@ -786,7 +786,7 @@ describe("atomic song replacement", () => {
 		expect(Config.willReloadForCustomSamples).toBe(originalReloadFlag);
 	});
 
-	test("custom sample transaction rolls back editor and wave globals", () => {
+	test("staged sample handler leaves editor and wave globals untouched", () => {
 		const originalSamples = EditorConfig.customSamples;
 		const originalCategoryCount = EditorConfig.presetCategories.length;
 		const originalChipWaves = Config.chipWaves;
@@ -794,16 +794,14 @@ describe("atomic song replacement", () => {
 		const originalRawRawChipWaves = Config.rawRawChipWaves;
 		const originalReloadFlag = Config.willReloadForCustomSamples;
 		setGlobal("document", { title: "original title" });
-		const transaction = createCustomSampleTransaction();
+		const handler = createStagedSampleHandler();
 
-		transaction.handler.setCustomSamples(["changed"]);
-		transaction.handler.addPresetCategory({ name: "temp", presets: [] });
-		transaction.handler.setDocumentTitle("changed title");
-		Config.chipWaves = [] as never;
-		Config.rawChipWaves = [] as never;
-		Config.rawRawChipWaves = [] as never;
-		Config.willReloadForCustomSamples = !originalReloadFlag;
-		transaction.rollback();
+		handler.setCustomSamples(["changed"]);
+		handler.addPresetCategory({ name: "temp", presets: [] });
+		handler.setDocumentTitle("changed title");
+		expect(handler.getCustomSamples()).toEqual(["changed"]);
+		expect(handler.getPresetCategories().length).toBe(originalCategoryCount + 1);
+		handler.clearSamples();
 
 		expect(EditorConfig.customSamples).toBe(originalSamples);
 		expect(EditorConfig.presetCategories.length).toBe(originalCategoryCount);
@@ -814,7 +812,7 @@ describe("atomic song replacement", () => {
 		expect(Config.willReloadForCustomSamples).toBe(originalReloadFlag);
 	});
 
-	test("custom sample transaction commits editor and wave globals", () => {
+	test("failing decode never reaches the live handler", () => {
 		const originalSamples = EditorConfig.customSamples;
 		const originalCategoryCount = EditorConfig.presetCategories.length;
 		const originalChipWaves = Config.chipWaves;
@@ -822,35 +820,77 @@ describe("atomic song replacement", () => {
 		const originalRawRawChipWaves = Config.rawRawChipWaves;
 		const originalReloadFlag = Config.willReloadForCustomSamples;
 		setGlobal("document", { title: "original title" });
-		const transaction = createCustomSampleTransaction();
-		const changedChipWaves = [] as never;
-		const changedRawChipWaves = [] as never;
-		const changedRawRawChipWaves = [] as never;
+		const live = createCustomSampleHandler();
+		let liveCalls = 0;
+		for (const key of Object.keys(live) as (keyof typeof live)[]) {
+			const original = live[key] as (...args: unknown[]) => unknown;
+			if (typeof original !== "function") continue;
+			(live as unknown as Record<string, unknown>)[key] = (...args: unknown[]): unknown => {
+				liveCalls++;
+				return original(...args);
+			};
+		}
+		const malformed = JSON.stringify({
+			format: "JummBox",
+			name: "changed title",
+			customSamples: ["legacySamples"],
+			channels: [null],
+		});
+
+		expect(() => decodeEditorSong(malformed, live)).toThrow(SongDataError);
+		expect(liveCalls).toBe(0);
+		expect(EditorConfig.customSamples).toBe(originalSamples);
+		expect(EditorConfig.presetCategories.length).toBe(originalCategoryCount);
+		expect(document.title).toBe("original title");
+		expect(Config.chipWaves).toBe(originalChipWaves);
+		expect(Config.rawChipWaves).toBe(originalRawChipWaves);
+		expect(Config.rawRawChipWaves).toBe(originalRawRawChipWaves);
+		expect(Config.willReloadForCustomSamples).toBe(originalReloadFlag);
+	});
+
+	test("succeeding decode applies samples and title to the live handler once", () => {
+		const originalSamples = EditorConfig.customSamples;
+		const originalChipWaves = Config.chipWaves;
+		const originalRawChipWaves = Config.rawChipWaves;
+		const originalRawRawChipWaves = Config.rawRawChipWaves;
+		const originalReloadFlag = Config.willReloadForCustomSamples;
+		const originalLoadingState = {
+			statusTable: sampleLoadingState.statusTable,
+			urlTable: sampleLoadingState.urlTable,
+			totalSamples: sampleLoadingState.totalSamples,
+			samplesLoaded: sampleLoadingState.samplesLoaded,
+		};
+		const url = "https://example.com/once.wav";
+		const hash = `${new Song().toBase64String()}|${url}`;
+		setGlobal("document", { title: "original title" });
+		setGlobal("OFFLINE", false);
+		setGlobal("alert", (): void => {});
+		setGlobal("AudioContext", class {
+			close(): Promise<void> { return Promise.resolve(); }
+		});
+		setGlobal("fetch", () => Promise.resolve({ ok: false }));
+		const live = createCustomSampleHandler();
+		let setCalls = 0;
+		const setCustomSamples = live.setCustomSamples;
+		live.setCustomSamples = (urls: string[]): void => {
+			setCalls++;
+			setCustomSamples(urls);
+		};
 
 		try {
-			transaction.handler.setCustomSamples(["committed"]);
-			transaction.handler.addPresetCategory({ name: "committed", presets: [] });
-			transaction.handler.setDocumentTitle("committed title");
-			Config.chipWaves = changedChipWaves;
-			Config.rawChipWaves = changedRawChipWaves;
-			Config.rawRawChipWaves = changedRawRawChipWaves;
-			Config.willReloadForCustomSamples = !originalReloadFlag;
-			transaction.commit();
-
-			expect(EditorConfig.customSamples).toEqual(["committed"]);
-			expect(EditorConfig.presetCategories.length).toBe(originalCategoryCount + 1);
-			expect(document.title).toBe(`committed title - ${EditorConfig.versionDisplayName}`);
-			expect(Config.chipWaves).toBe(changedChipWaves);
-			expect(Config.rawChipWaves).toBe(changedRawChipWaves);
-			expect(Config.rawRawChipWaves).toBe(changedRawRawChipWaves);
-			expect(Config.willReloadForCustomSamples).toBe(!originalReloadFlag);
+			Config.willReloadForCustomSamples = false;
+			EditorConfig.customSamples = null;
+			decodeEditorSong(hash, live);
+			expect(setCalls).toBe(1);
+			expect(EditorConfig.customSamples).toEqual([url]);
+			expect(document.title).toEndWith(` - ${EditorConfig.versionDisplayName}`);
 		} finally {
-			EditorConfig.customSamples = originalSamples;
-			EditorConfig.presetCategories.length = originalCategoryCount;
+			Config.willReloadForCustomSamples = originalReloadFlag;
 			Config.chipWaves = originalChipWaves;
 			Config.rawChipWaves = originalRawChipWaves;
 			Config.rawRawChipWaves = originalRawRawChipWaves;
-			Config.willReloadForCustomSamples = originalReloadFlag;
+			EditorConfig.customSamples = originalSamples;
+			Object.assign(sampleLoadingState, originalLoadingState);
 		}
 	});
 });

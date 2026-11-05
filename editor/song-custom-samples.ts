@@ -5,80 +5,47 @@
 // This module:
 // - Creates a CustomSampleHandler using EditorConfig
 // - Provides createCustomSampleHandler to pass to Song constructor
+// - Stages every decode against a side-effect-free handler before the live handler runs
+//
+// decodeEditorSong decodes twice. The staged pass keeps samples, preset
+// categories and title in local values and touches no global, so any decode
+// error surfaces before state changes. The live pass is the single commit step
+// and is the only writer of Config.chipWaves, Config.rawChipWaves,
+// Config.rawRawChipWaves, Config.willReloadForCustomSamples, sample loading
+// state, EditorConfig.customSamples, EditorConfig.presetCategories and
+// document.title. It runs only after the staged pass succeeds on identical input.
 
-import { Config, type CustomSampleHandler, Song } from "../synth";
+import { type CustomSampleHandler, Song } from "../synth";
 import { EditorConfig } from "./config/editor-config";
 
-export interface CustomSampleTransaction {
-	handler: CustomSampleHandler;
-	commit(): void;
-	rollback(): void;
-}
-
-export function createCustomSampleTransaction(): CustomSampleTransaction {
-	const originalSamples: string[] | null = EditorConfig.customSamples;
-	const originalCategoryCount: number = EditorConfig.presetCategories.length;
-	const originalTitle: string = typeof document !== "undefined" ? document.title : "";
-	const originalChipWaves = Config.chipWaves;
-	const originalRawChipWaves = Config.rawChipWaves;
-	const originalRawRawChipWaves = Config.rawRawChipWaves;
-	const originalReloadFlag: boolean = Config.willReloadForCustomSamples;
-	let samples: string[] | null = originalSamples?.slice() ?? null;
-	let title: string | null = null;
+export function createStagedSampleHandler(): CustomSampleHandler {
+	let samples: string[] | null = EditorConfig.customSamples?.slice() ?? null;
 	const categories: any[] = [];
-	let finished: boolean = false;
-
-	const rollback = (): void => {
-		if (finished) return;
-		EditorConfig.customSamples = originalSamples;
-		EditorConfig.presetCategories.length = originalCategoryCount;
-		if (typeof document !== "undefined") document.title = originalTitle;
-		Config.chipWaves = originalChipWaves;
-		Config.rawChipWaves = originalRawChipWaves;
-		Config.rawRawChipWaves = originalRawRawChipWaves;
-		Config.willReloadForCustomSamples = originalReloadFlag;
-		finished = true;
-	};
 
 	return {
-		handler: {
-			deferSampleLoading: true,
-			getCustomSamples(): string[] | null {
-				return samples;
-			},
-			setCustomSamples(urls: string[]): void {
-				samples = urls.slice();
-			},
-			getPresetCategories(): any[] {
-				return EditorConfig.presetCategories.concat(categories);
-			},
-			addPresetCategory(category: any): void {
-				categories.push(category);
-			},
-			nameToPresetValue(name: string): number | null {
-				return EditorConfig.nameToPresetValue(name);
-			},
-			getVersionDisplayName(): string {
-				return EditorConfig.versionDisplayName;
-			},
-			setDocumentTitle(nextTitle: string): void {
-				title = `${nextTitle} - ${EditorConfig.versionDisplayName}`;
-			},
-			clearSamples(): void {
-				samples = null;
-			},
+		deferSampleLoading: true,
+		getCustomSamples(): string[] | null {
+			return samples;
 		},
-		commit(): void {
-			if (finished) return;
-			EditorConfig.customSamples = samples;
-			for (const category of categories) {
-				category.index = EditorConfig.presetCategories.length;
-				EditorConfig.presetCategories.push(category);
-			}
-			if (title != null && typeof document !== "undefined") document.title = title;
-			finished = true;
+		setCustomSamples(urls: string[]): void {
+			samples = urls.slice();
 		},
-		rollback,
+		getPresetCategories(): any[] {
+			return EditorConfig.presetCategories.concat(categories);
+		},
+		addPresetCategory(category: any): void {
+			categories.push(category);
+		},
+		nameToPresetValue(name: string): number | null {
+			return EditorConfig.nameToPresetValue(name);
+		},
+		getVersionDisplayName(): string {
+			return EditorConfig.versionDisplayName;
+		},
+		setDocumentTitle(): void {},
+		clearSamples(): void {
+			samples = null;
+		},
 	};
 }
 
@@ -87,25 +54,12 @@ export function decodeEditorSong(
 	liveHandler: CustomSampleHandler,
 	jsonFormat: string = "auto",
 ): Song {
-	const validation = createCustomSampleTransaction();
-	try {
-		const validationSong = new Song(undefined, validation.handler);
-		validationSong.fromBase64String(serializedSong, jsonFormat);
-	} catch (error) {
-		validation.rollback();
-		throw error;
-	}
-	validation.rollback();
+	const staged = new Song(undefined, createStagedSampleHandler());
+	staged.fromBase64String(serializedSong, jsonFormat);
 
-	const liveGuard = createCustomSampleTransaction();
-	try {
-		const song = new Song(undefined, liveHandler);
-		song.fromBase64String(serializedSong, jsonFormat);
-		return song;
-	} catch (error) {
-		liveGuard.rollback();
-		throw error;
-	}
+	const song = new Song(undefined, liveHandler);
+	song.fromBase64String(serializedSong, jsonFormat);
+	return song;
 }
 
 export function createCustomSampleHandler(): CustomSampleHandler {
