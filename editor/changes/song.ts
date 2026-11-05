@@ -1370,6 +1370,8 @@ export class ChangeSong extends ChangeGroup {
 		const oldRecentPatternInstruments: number[][] =
 			doc.recentPatternInstruments?.map((instruments) => instruments.slice()) ?? [];
 		const oldSelection = doc.selection?.toJSON?.();
+		const oldBarScrollPos: number = doc.barScrollPos;
+		const oldChannelScrollPos: number = doc.channelScrollPos;
 		let swapped: boolean = false;
 		try {
 			const decodedSong = decodeEditorSong(
@@ -1387,17 +1389,22 @@ export class ChangeSong extends ChangeGroup {
 			) {
 				ColorConfig.resetColors();
 			}
+			doc.bar = 0;
+			doc.channel = 0;
+			doc.barScrollPos = 0;
+			doc.channelScrollPos = 0;
+			this.append(new ChangePatternSelection(doc, 0, 0));
+			doc.selection.resetBoxSelection();
+			const channelCount: number = doc.song.channels.length;
+			doc.viewedInstrument.length = 0;
+			doc.recentPatternInstruments.length = 0;
+			for (let i: number = 0; i < channelCount; i++) {
+				doc.viewedInstrument[i] = 0;
+				doc.recentPatternInstruments[i] = [0];
+			}
 			if (newHash === "") {
-				this.append(new ChangePatternSelection(doc, 0, 0));
-				doc.selection.resetBoxSelection();
 				setDefaultInstruments(doc.song);
 				doc.song.scale = doc.prefs.defaultScale;
-
-				for (let i: number = 0; i <= doc.song.channels.length; i++) {
-					doc.viewedInstrument[i] = 0;
-					doc.recentPatternInstruments[i] = [0];
-				}
-				doc.viewedInstrument.length = doc.song.channels.length;
 			} else {
 				this.append(new ChangeValidateTrackSelection(doc));
 			}
@@ -1410,6 +1417,8 @@ export class ChangeSong extends ChangeGroup {
 				doc.synth.setSong(oldSong);
 				doc.bar = oldBar;
 				doc.channel = oldChannel;
+				doc.barScrollPos = oldBarScrollPos;
+				doc.channelScrollPos = oldChannelScrollPos;
 				if (doc.viewedInstrument != null) {
 					doc.viewedInstrument.splice(
 						0,
