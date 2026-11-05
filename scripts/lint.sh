@@ -5,6 +5,7 @@
 # This script:
 # - Captures all Biome and ESLint diagnostics without hiding warnings
 # - Rejects new, moved, changed, or resolved warning fingerprints
+# - Rejects forbidden cross-context imports and import-cycle growth
 # - Type-checks editor, synth, and player source
 # - Updates the reviewed baseline only when UPDATE_LINT_BASELINE=1
 
@@ -76,3 +77,4 @@ if [[ ${UPDATE_LINT_BASELINE:-0} == 1 ]]; then
 	BASELINE_MODE="--write"
 fi
 "$RUNNER" scripts/check-lint-baseline.mjs "$ESLINT_REPORT" "$BIOME_REPORT" "$BASELINE" "$BASELINE_MODE"
+"$RUNNER" scripts/check-import-boundaries.ts

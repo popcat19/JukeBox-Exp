@@ -17,6 +17,7 @@ Purpose: Project root with configuration, build tooling, and entry points.
 - `package-lock.json`, npm lockfile for CI environments
 - `biome.json`, Biome formatter and linter configuration
 - `eslint.config.mjs`, ESLint configuration with TypeScript rules
+- `import-boundaries-baseline.json`, Reviewed forbidden-import exceptions and import-cycle size ceilings
 - `flake.nix`, Nix flake definition for reproducible development environments
 - `flake.lock`, Nix flake lockfile
 - `tsconfig.json`, Root TypeScript config forwarding to sub-projects

@@ -28,6 +28,8 @@
 		"dev:legacy": "bash ./scripts/live-editor-legacy.sh",
 		"lint": "bash ./scripts/lint.sh",
 		"lint:baseline": "UPDATE_LINT_BASELINE=1 bash ./scripts/lint.sh",
+		"check:imports": "bun scripts/check-import-boundaries.ts",
+		"check:imports:baseline": "bun scripts/check-import-boundaries.ts --write",
 		"lint:fix": "bash ./scripts/lint-fix.sh",
 		"test": "bun test",
 		"deploy": "bash ./scripts/deploy.sh",

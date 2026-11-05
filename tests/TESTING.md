@@ -15,6 +15,7 @@ an uncovered module.
 
 | Source | Test file | Scope |
 |--------|-----------|-------|
+| `scripts/check-import-boundaries.ts` | `tests/import-boundaries.test.ts` | boundary rules per context pair, baselined and resolved violations, cycle growth, new cycles, and shrink notice |
 | `scripts/check-lint-baseline.mjs` | `tests/lint-baseline.test.ts` | unchanged, added, moved, removed, and malformed warning baselines |
 
 ### synth/

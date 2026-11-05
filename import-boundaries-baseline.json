@@ -1,0 +1,15 @@
+{
+	"version": 1,
+	"violations": [
+		"editor-model-to-view: editor/core/change-dispatcher.ts -> editor/components/piano.ts",
+		"shared-to-synth: shared/timeline-surface.ts -> synth/index.ts"
+	],
+	"sccSizes": [
+		31,
+		27,
+		25,
+		4,
+		2,
+		2
+	]
+}
