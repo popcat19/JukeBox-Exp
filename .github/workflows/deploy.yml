@@ -1,10 +1,16 @@
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [dev-exp]
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
