@@ -137,12 +137,18 @@ describe("prompt drag", () => {
 	test("PromptManager closes and replaces drag attachment immediately", () => {
 		const source = readFileSync("editor/core/prompt-manager.ts", "utf8");
 		const closeStart = source.indexOf("public close(");
-		const removeStart = source.indexOf("const doRemove", closeStart);
+		// Removal is synchronous, so the drag disposer must run before the
+		// container leaves the DOM rather than before an exit callback.
+		const removeStart = source.indexOf(
+			"this._host.promptContainer.removeChild(target.container)",
+			closeStart,
+		);
 		const closeDragDispose = source.indexOf("this._promptDragDisposers.get(prompt)?.();", closeStart);
 		const attachStart = source.indexOf("private _attachDrag(");
 		const helperAttach = source.indexOf("const dispose = attachPromptDrag({", attachStart);
 		const replaceDispose = source.indexOf("this._promptDragDisposers.get(prompt)?.();", attachStart);
 		expect(closeDragDispose).toBeGreaterThan(closeStart);
+		expect(removeStart).toBeGreaterThan(closeStart);
 		expect(closeDragDispose).toBeLessThan(removeStart);
 		expect(replaceDispose).toBeGreaterThan(attachStart);
 		expect(replaceDispose).toBeLessThan(helperAttach);

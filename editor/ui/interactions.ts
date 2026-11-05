@@ -32,7 +32,11 @@ function ensureStyleInjected(): void {
 		`.${HOVER_COLOR_CLASS}:hover{color:var(--hover-color-accent, var(--cta-fg));}`,
 		`.${FOCUS_CLASS}:focus-visible{outline-color:var(--scrollbar-color, var(--subtext));}`,
 		`.${ACTIVE_CLASS}{${interactiveSurface("primary")}}`,
-		`.${DISABLED_CLASS}{opacity:0.24;}`,
+		// Disabled is a surface replacement, not a fade. Fading the whole
+		// control drops the text below 4.5:1 and leaves hover affordances
+		// looking live, so use the PMD disabled triple instead: 4x backing,
+		// 88x40% foreground, and a solid 2px inset boundary.
+		`.${DISABLED_CLASS}{opacity:1;background:var(--editor-background, black);color:var(--base03-muted, #999);outline:2px solid var(--base03-muted, #999);outline-offset:-2px;cursor:not-allowed;}`,
 	);
 	injectGlobalStyles(document, "pmd-interactions", css);
 }

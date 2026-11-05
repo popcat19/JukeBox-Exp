@@ -9,19 +9,20 @@
 // Prompt DOM state contract (issue #27):
 //
 // Lifecycle classes, asserted by tests/dom-hooks.test.ts — do not rename:
-//   .entering  — pre-enter hide + enter animation (fill-mode: both).
-//                Owned by prompt-manager.ts. Added before append;
-//                removed on animationend.
-//   .exiting   — exit animation (fill-mode: forwards). Owned by
-//                prompt-manager.ts (close) and base-prompt.ts
-//                (animateExit). Removed on animationend which
-//                triggers DOM removal (doRemove).
+//   .entering  — inert state hook pinned to `animation: none`.
+//   .exiting   — inert state hook pinned to `animation: none`, plus
+//                pointer-events: none. Removal is synchronous in
+//                prompt-manager.ts (close), so this state is never
+//                observed for more than one task.
 //   .focused   — steady focus outline. Owned by prompt-manager.ts
 //                (_updatePromptFocus).
-//   .refocus   — transient raise-gesture outline flash when an
-//                existing prompt is reopened. Owned by
-//                prompt-manager.ts. Removed on animationend.
+//   .refocus   — inert state hook pinned to `animation: none`. The
+//                raise gesture is gone; reopening a prompt now conveys
+//                position by stacking order alone.
 //   .docked    — pinned to L/R editor edge. Owned by prompt-dock.ts.
+//
+// PMD forbids transitions and animations, so none of these classes carry
+// motion. They survive as selectors so the hooks stay stable.
 //
 // View-state class (NOT a lifecycle state; not in the dom-hooks set):
 //   .shaded    — titlebar-only collapsed view, toggled by BasePrompt.
@@ -39,19 +40,18 @@
 //   the shared titlebar for class-based and component-owned prompts.
 // Factories hand-build the .prompt div and use the shared titlebar builder.
 //
-// Reduced motion: prompt lifecycle animations collapse to 0.01ms
-// (see animations.ts) so animationend cleanup still fires.
+// Reduced motion: prompt lifecycle states carry no motion at all, so there
+// is nothing to collapse (see animations.ts).
 //
 // Inline-style exceptions (audit §6): measured position (left/top),
 // dock pinning, divider geometry, and editor padding stay inline in
-// prompt-manager.ts / prompt-dock.ts. Visual state (spawn opacity)
-// moved to the .entering class under #27. The backdrop/background
+// prompt-manager.ts / prompt-dock.ts. The backdrop/background
 // toggle in _updatePromptFocus (showPromptBackdrop pref) remains
 // inline — it is runtime-coupled with prompt-popout.ts documentElement
 // custom-property overrides and awaits popout boundary work.
 
 import { ColorConfig } from "../../../shared/color-config";
-import { Animation, Typography } from "../../ui/style-constants";
+import { Typography } from "../../ui/style-constants";
 import { buildAnimationsCSS } from "./animations";
 
 export function buildPromptShellCSS(): string {
@@ -85,7 +85,6 @@ export function buildPromptShellCSS(): string {
 	width: 6px;
 	cursor: col-resize;
 	background: var(--ui-widget-background, #444);
-	transition: background 100ms ${Animation.easingDefault};
 	pointer-events: auto;
 }
 .beepboxEditor .prompt-dock-divider:hover {
@@ -140,7 +139,6 @@ export function buildPromptShellCSS(): string {
 	z-index: 1;
 	pointer-events: auto;
 	outline: none;
-	transition: outline-color 150ms ${Animation.easingDefault};
 }
 
 ${buildAnimationsCSS()}

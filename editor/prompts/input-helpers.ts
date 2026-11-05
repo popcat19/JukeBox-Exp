@@ -25,9 +25,16 @@ export function validateNumber(event: Event): void {
 }
 
 export function validate(input: HTMLInputElement): number {
-	return Math.floor(
-		Math.max(Number(input.min), Math.min(Number(input.max), Number(input.value))),
-	);
+	const min = Number(input.min);
+	const max = Number(input.max);
+	const raw = Number(input.value);
+	// Empty or malformed text parses to NaN, and Math.max/min propagate NaN,
+	// so every caller recorded a NaN numeric setting. Fall back to the bound
+	// the field already declares.
+	const value = Number.isFinite(raw) ? raw : Number.isFinite(min) ? min : 0;
+	const lower = Number.isFinite(min) ? min : value;
+	const upper = Number.isFinite(max) ? max : value;
+	return Math.floor(Math.max(lower, Math.min(upper, value)));
 }
 
 export function updatePlayButton(btn: HTMLButtonElement, playing: boolean): void {

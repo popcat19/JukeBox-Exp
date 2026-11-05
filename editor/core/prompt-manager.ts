@@ -140,19 +140,7 @@ const _noPlayPausePrompts: ReadonlySet<Function> = new Set([
 
 export class PromptManager {
 	private readonly _prompts: Prompt[] = [];
-	// Prompts whose exit animation is still in flight (their containers
-	// are still in the DOM but they've already been spliced out of
-	// _prompts). Tracked so a subsequent _setPrompt can synchronously
-	// remove them — otherwise the old container lingers for 150ms and
-	// shows the prev prompt's exit animation under the new prompt's
-	// enter animation. The pairing of (prompt, doRemove) lets us cancel
-	// the animationend listener and run doRemove directly.
-	private readonly _exitingPrompts: Array<{ prompt: Prompt; doRemove: () => void }> = [];
 	private _hideContainerTimer: ReturnType<typeof setTimeout> | null = null;
-	// True while an explicit user 'open' is in flight. The internal
-	// sync() calls hit the existing-found path on every render and
-	// should not flash; user-targeted opens should.
-	private _userInitiatedOpen: boolean = false;
 	private _openingForNavigator: boolean = false;
 	private _navigatorTipName: string | null = null;
 	private _navigatorTipSourceScope: string | null = null;
@@ -369,10 +357,8 @@ export class PromptManager {
 			log.log("open: unavailable focused route", promptName, availability.error);
 			return;
 		}
-		this._userInitiatedOpen = true;
 		this._host.doc.openPrompt(promptName);
 		this._setPrompt(promptName);
-		this._userInitiatedOpen = false;
 	}
 
 	public sync(promptName: string | null): void {
@@ -410,29 +396,16 @@ export class PromptManager {
 					remaining: this._prompts.length,
 				});
 				const target = prompt;
-				const doRemove = (): void => {
-					// Remove from the exiting list so the entry is GC-able.
-					const i = this._exitingPrompts.findIndex((e) => e.prompt === target);
-					if (i !== -1) this._exitingPrompts.splice(i, 1);
-					if (target.container.parentNode === this._host.promptContainer) {
-						this._host.promptContainer.removeChild(target.container);
-					}
-					target.cleanUp();
-				};
-				// Track this exit so a subsequent _setPrompt can cancel
-				// it and remove the container synchronously — otherwise
-				// the old container lingers for 150ms and the user sees
-				// the previous prompt's exit animation under the new
-				// prompt's enter animation.
-				this._exitingPrompts.push({ prompt: target, doRemove });
-				if (target.animateExit) {
-					target.animateExit(doRemove);
-				} else {
-					target.container.classList.add("exiting");
-					target.container.addEventListener("animationend", doRemove, {
-						once: true,
-					});
+				// Removal is synchronous: PMD mandates immediate state changes, so
+				// there is no exit animation to wait on. The pointer-events guard
+				// on .exiting is unnecessary now that the node leaves the DOM in
+				// the same task as the close.
+				this._promptDragDisposers.get(target)?.();
+				this._promptDragDisposers.delete(target);
+				if (target.container.parentNode === this._host.promptContainer) {
+					this._host.promptContainer.removeChild(target.container);
 				}
+				target.cleanUp();
 				if (this._focusedPrompt === target) {
 					this._focusedPrompt = this._prompts[this._prompts.length - 1] || null;
 					this._updatePromptFocus();
@@ -540,28 +513,6 @@ export class PromptManager {
 			});
 			this._focusedPrompt = existing;
 			this._updatePromptFocus();
-			// Flash 88x outline only on user-initiated reopens of an
-			// already-open prompt. The spawn path uses the .entering
-			// animation for feedback, and the internal sync() calls
-			// on every render hit this branch too — they must not
-			// flash. _userInitiatedOpen is set true by open() and
-			// false again after _setPrompt returns.
-			if (this._userInitiatedOpen) {
-				existing.openCount = (existing.openCount ?? 1) + 1;
-				log.log("flash 88x on existing", promptName, { openCount: existing.openCount });
-				existing.container.classList.remove("refocus");
-				// Force a reflow so re-adding the class restarts the
-				// animation even if it was already running.
-				void existing.container.offsetWidth;
-				existing.container.classList.add("refocus");
-				existing.container.addEventListener(
-					"animationend",
-					() => {
-						existing.container.classList.remove("refocus");
-					},
-					{ once: true },
-				);
-			}
 			return;
 		}
 
@@ -697,7 +648,6 @@ export class PromptManager {
 		newPrompt.openAlongsideCallback = (name) => {
 			this._setPrompt(name);
 		};
-		newPrompt.openCount = 1; // first spawn
 
 		this._prompts.push(newPrompt);
 		log.log("pushed", promptName, {
@@ -724,34 +674,11 @@ export class PromptManager {
 			this._hideContainerTimer = null;
 		}
 
-		// Synchronously remove any prompts whose exit animation is
-		// still in flight. Without this, the previously-closed prompt's
-		// container lingers in the DOM for the full 150ms exit
-		// animation, so opening a new prompt shows the previous
-		// prompt's fade-out under the new prompt's fade-in.
-		// doRemove is the same handler the animationend would have
-		// called, so cleanUp and parentNode check keep this safe if
-		// the animation has already finished.
-		if (this._exitingPrompts.length > 0) {
-			log.log("cancelling in-flight exit animations", this._exitingPrompts.length);
-			const pending = this._exitingPrompts.splice(0, this._exitingPrompts.length);
-			for (const { doRemove } of pending) doRemove();
-		}
+		// No exit animations remain (see animations.ts), so no in-flight
+		// containers can outlive their close. Nothing to cancel here.
 
 		this._host.promptContainer.style.display = "";
-		// Pre-enter hide via the entering class + fill-mode: both (see
-		// animations.ts). The from-state (opacity 0, scale 0.96) applies
-		// before the animation starts, replacing the former inline
-		// opacity="0". Positioning happens in the rAF below before the
-		// first animated frame is painted.
-		newPrompt.container.classList.add("entering");
-		newPrompt.container.addEventListener(
-			"animationend",
-			() => {
-				newPrompt.container.classList.remove("entering");
-			},
-			{ once: true },
-		);
+		// Positioning happens in the rAF below, before the first paint.
 		this._host.promptContainer.appendChild(newPrompt.container);
 
 		// Close over cursor info here (synchronously before any

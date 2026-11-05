@@ -146,7 +146,7 @@ export function buildPromptExportCSS(): string {
 .beepboxEditor .navigator-import-export-surface.exportPrompt .exportProgressContainer,
 .beepboxEditor .prompt.exportPrompt .exportProgressContainer { width: 100%; max-width: 100%; height: 12px; display: block; position: relative; z-index: 1; background: var(--ui-widget-background); margin: 4px 0; border-radius: var(--border-radius-medium); overflow: hidden; }
 .beepboxEditor .navigator-import-export-surface.exportPrompt .exportProgressBar,
-.beepboxEditor .prompt.exportPrompt .exportProgressBar { width: 0%; height: 100%; position: absolute; z-index: 2; background: var(--loop-accent); transition: width 150ms var(--ease); }
+.beepboxEditor .prompt.exportPrompt .exportProgressBar { width: 0%; height: 100%; position: absolute; z-index: 2; background: var(--loop-accent); }
 .beepboxEditor .navigator-import-export-surface.exportPrompt .exportProgressLabel,
 .beepboxEditor .prompt.exportPrompt .exportProgressLabel { position: relative; top: -1px; z-index: 3; mix-blend-mode: difference; color: #fff; font-weight: 600; font-size: 10px; text-align: center; line-height: 12px; }
 .beepboxEditor .navigator-import-export-surface.exportPrompt .exportPromptFooter,

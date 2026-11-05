@@ -253,13 +253,17 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 
 	private readonly _playPauseButton: HTMLButtonElement = button(
 		{
-			style: `font-size: ${Typography.sizeSm}; width: ${Sizing.button}; height: ${Sizing.button}; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1;`,
+			style: `font-size: ${Typography.sizeSm}; width: ${Sizing.button}; height: ${Sizing.button}; padding: 0; border-radius: var(--border-radius-full); display: flex; align-items: center; justify-content: center; line-height: 1;`,
+			type: "button",
+			title: "Play or pause",
 		},
 		"▶",
 	);
 	private readonly _stopButton: HTMLButtonElement = button(
 		{
-			style: `font-size: ${Typography.sizeSm}; width: ${Sizing.button}; height: ${Sizing.button}; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1;`,
+			style: `font-size: ${Typography.sizeSm}; width: ${Sizing.button}; height: ${Sizing.button}; padding: 0; border-radius: var(--border-radius-full); display: flex; align-items: center; justify-content: center; line-height: 1;`,
+			type: "button",
+			title: "Stop",
 		},
 		"■",
 	);
@@ -274,20 +278,22 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 	});
 	private readonly _loopButton: HTMLButtonElement = button(
 		{
-			style: `width: 26px; height: 26px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; outline: none; line-height: 1; font-size: 12px; background: var(--tab-inactive-bg); color: var(--tab-inactive-fg); transition: background 150ms, color 150ms;`,
+			style: `width: 26px; height: 26px; padding: 0; border-radius: var(--border-radius-full); display: flex; align-items: center; justify-content: center; cursor: pointer; outline: none; line-height: 1; font-size: 12px; background: var(--tab-inactive-bg); color: var(--tab-inactive-fg);`,
 			class: "cvv-loop-btn",
 			title: "Toggle loop",
+			type: "button",
+			"aria-label": "Toggle loop",
 		},
 		svg({ width: 12, height: 12, viewBox: "0 0 24 24" }, this._loopIcon),
 	);
 	// Progress / scrub bar: a pill-shaped track div with a child
 	// fill div whose width (as %) tracks the playhead.
 	private readonly _scrubFill: HTMLDivElement = div({
-		style: "width: 0; height: 100%; background: var(--cta-bg); border-radius: 6px;",
+		style: "width: 0; height: 100%; background: var(--cta-bg); border-radius: var(--border-radius-rem-sm);",
 	});
 	private readonly _scrubTrack: HTMLDivElement = div(
 		{
-			style: "width: 100%; height: 12px; display: block; margin: 0; cursor: pointer; touch-action: none; position: relative; background: var(--secondary-text); border-radius: 6px; overflow: hidden;",
+			style: "width: 100%; height: 12px; display: block; margin: 0; cursor: pointer; touch-action: none; position: relative; background: var(--secondary-text); border-radius: var(--border-radius-rem-sm); overflow: hidden;",
 		},
 		this._scrubFill,
 	);
@@ -734,6 +740,10 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 		const active: boolean = this._doc.synth.loopRepeatCount === -1;
 		this._loopButton.style.background = active ? "var(--cta-bg)" : "var(--tab-inactive-bg)";
 		this._loopButton.style.color = active ? "var(--cta-fg)" : "var(--tab-inactive-fg)";
+		// The glyph is the only content, so the accessible name carries the
+		// on/off state. Without it a screen reader reports a nameless button.
+		this._loopButton.setAttribute("aria-pressed", String(active));
+		this._loopButton.title = active ? "Loop enabled" : "Loop disabled";
 	};
 
 	private _onLoopMouseEnter = (): void => {

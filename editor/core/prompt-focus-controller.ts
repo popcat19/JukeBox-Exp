@@ -34,6 +34,14 @@ export class PromptFocusController {
 	shouldPromptReceiveKeys(prompt: Prompt | null): boolean {
 		if (!prompt) return false;
 		if (this.holdFocus) return true;
+		// Focus ownership decides key routing, not pointer position. A prompt
+		// whose own control has focus must keep receiving Enter, Escape, and
+		// arrow keys after the cursor wanders off it; a prompt with no focus
+		// inside still answers to hover so click-then-type keeps working.
+		const active = document.activeElement;
+		if (active !== null && active !== document.body && prompt.container.contains(active)) {
+			return true;
+		}
 		try {
 			return prompt.container.matches(":hover");
 		} catch {

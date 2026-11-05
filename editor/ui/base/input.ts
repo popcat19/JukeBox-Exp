@@ -18,7 +18,14 @@ export interface InputOptions {
 	"data-*"?: string;
 }
 
+const WHEEL_BOUND = "wheelStepBound";
+
 export function addWheelSupport(input: HTMLInputElement): void {
+	// createInput attaches wheel support to every number field, and several
+	// prompts call this again explicitly. Without the guard, each extra call
+	// adds a listener and a single wheel notch steps twice.
+	if (input.dataset[WHEEL_BOUND] === "true") return;
+	input.dataset[WHEEL_BOUND] = "true";
 	input.addEventListener(
 		"wheel",
 		(event: WheelEvent) => {

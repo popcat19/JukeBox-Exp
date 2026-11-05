@@ -88,12 +88,48 @@ export function buildBaseWidgetsCSS(): string {
 	color: red;
 }
 
-/* PMD opacity.txt:9: 88×24% foreground = disabled state.
- * Applies to every natively-disabled form control inside the editor.
- * The pmd-disabled class hook used by editor/ui/interactions.ts
- * covers programmatic-only disabling. */
+/* PMD: disabled is a surface replacement, not a fade. The previous
+ * opacity-only rule dimmed the whole control, which dropped text below
+ * 4.5:1 and left hover affordances reading as operable. Inputs take a 4x
+ * backing with base03 foreground and a solid 2px inset boundary; buttons
+ * take the same backing and boundary. */
 .beepboxEditor [disabled] {
-	opacity: 0.24;
+	opacity: 1;
+	cursor: not-allowed;
+}
+
+.beepboxEditor input[disabled],
+.beepboxEditor select[disabled],
+.beepboxEditor textarea[disabled] {
+	background: var(--editor-background, black);
+	color: var(--base03-muted, #999);
+	outline: 2px solid var(--base03-muted, #999);
+	outline-offset: -2px;
+}
+
+.beepboxEditor button[disabled] {
+	background: var(--editor-background, black);
+	color: var(--base03-muted, #999);
+	outline: 2px solid var(--base03-muted, #999);
+	outline-offset: -2px;
+	border: 0;
+}
+
+/* A previously active control replaces its active fill with base03 and
+ * takes floor-coloured text, so it cannot be mistaken for an enabled
+ * selection. */
+.beepboxEditor button[disabled].active,
+.beepboxEditor button[disabled][aria-pressed="true"] {
+	background: var(--base03-muted, #999);
+	color: var(--editor-background, black);
+	outline: none;
+}
+
+/* Suppress operable-looking hover on disabled controls. */
+.beepboxEditor button[disabled]:hover,
+.beepboxEditor input[disabled]:hover,
+.beepboxEditor select[disabled]:hover {
+	outline-color: var(--base03-muted, #999);
 }
 
 /* ── Preset button (replaces select2 dropdown) ── */
@@ -538,7 +574,6 @@ export function buildBaseWidgetsCSS(): string {
 	mask-repeat: no-repeat;
 	mask-position: center;
 	mask-size: 12px;
-	transition: transform 0.15s ease;
 }
 .beepboxEditor button.dropdown-button-tabler.dropdown-open::before {
 	transform: translate(-50%, -50%) rotate(180deg);

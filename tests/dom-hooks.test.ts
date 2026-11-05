@@ -45,13 +45,19 @@ describe("editor and prompt DOM hooks", () => {
 		assertLiteral("editor/components/track-editor.ts", '"noSelection"');
 	});
 
-	test("prompt structural and lifecycle hooks stay declared", () => {
+	test("prompt structural and focus hooks stay declared", () => {
 		assertLiteral("editor/components/spectrum-editor.ts", '"prompt graphEditorPrompt noSelection"');
-		assertLiteral("editor/core/prompt-manager.ts", 'classList.add("entering")');
-		assertLiteral("editor/core/prompt-manager.ts", 'classList.add("exiting")');
 		assertLiteral("editor/core/prompt-manager.ts", 'classList.add("focused")');
-		assertLiteral("editor/core/prompt-manager.ts", 'classList.add("refocus")');
 		assertLiteral("editor/core/prompt-dock.ts", 'classList.add("docked")');
+	});
+
+	test("prompt lifecycle classes remain non-animated hooks", () => {
+		// PMD forbids transitions and animations. The .entering, .exiting, and
+		// .refocus hooks survive in CSS only to pin them to `animation: none`,
+		// so a future edit cannot quietly reintroduce motion here.
+		assertLiteral("editor/rendering/styles/animations.ts", ".prompt.entering");
+		assertLiteral("editor/rendering/styles/animations.ts", ".prompt.exiting");
+		assertLiteral("editor/rendering/styles/animations.ts", ".prompt.refocus");
 	});
 
 	test("prompt popout, PMD role, and scrollbar hooks stay declared", () => {

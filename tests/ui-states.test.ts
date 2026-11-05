@@ -157,12 +157,17 @@ describe("interactions module contract", () => {
 		expect(joined).toContain(":focus-visible{outline-color:");
 	});
 
-	test("interactions source injects pmd-disabled rule at 88×24% opacity", () => {
+	test("interactions source injects the PMD disabled triple, not an opacity fade", () => {
 		const lines = sourceLines("editor/ui/interactions.ts");
 		const joined = lines.join("\n");
-		// PMD opacity.txt:9 mandates 88×24% = 0.24 for disabled foreground.
-		// Assert the source template (DISABLED_CLASS interpolates to pmd-disabled at runtime).
-		expect(joined).toContain("${DISABLED_CLASS}{opacity:0.24;}");
+		// PMD effects.md §Disabled controls: 4x backing, base03 foreground,
+		// solid 2px inset base03 boundary, and opacity 1. Fading the whole
+		// control is explicitly forbidden.
+		expect(joined).toContain("${DISABLED_CLASS}{opacity:1;");
+		expect(joined).toContain("background:var(--editor-background");
+		expect(joined).toContain("color:var(--base03-muted");
+		expect(joined).toContain("outline:2px solid var(--base03-muted");
+		expect(joined).not.toContain("opacity:0.24;");
 	});
 
 	test("DisableableElement union covers the form-control elements callers pass", () => {

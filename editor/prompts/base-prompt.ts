@@ -19,6 +19,25 @@ const { div } = HTML;
 
 export type PromptRenderSurface = "standalone" | "navigator";
 
+// Commit keys: Enter on a non-button target. Buttons keep native activation,
+// and multi-line or free-text fields own Enter so typing (and pasting CSS or
+// sample URLs) cannot commit and close the dialog mid-edit.
+const COMMIT_EXEMPT_TAGS: ReadonlySet<string> = new Set([
+	"BUTTON",
+	"TEXTAREA",
+	"INPUT",
+	"SELECT",
+	"A",
+]);
+
+function isCommitKey(event: KeyboardEvent): boolean {
+	if (event.key !== "Enter" && event.keyCode !== 13) return false;
+	const target = event.target as Element | null;
+	if (target !== null && COMMIT_EXEMPT_TAGS.has(target.tagName)) return false;
+	if (target !== null && target instanceof HTMLElement && target.isContentEditable) return false;
+	return true;
+}
+
 export interface PromptSurfaceOptions {
 	readonly surface?: PromptRenderSurface;
 }
@@ -52,6 +71,8 @@ export function buildPromptTitlebar(container: HTMLElement): void {
 	const h2El: HTMLElement | null = container.querySelector("h2");
 	if (!h2El) {
 		const shadeBtn: HTMLButtonElement = iconButton("shadeButton", { type: "button" });
+		shadeBtn.setAttribute("aria-label", "Collapse prompt");
+		shadeBtn.title = "Collapse prompt";
 		container.appendChild(shadeBtn);
 		shadeBtn.addEventListener("click", (event: Event) => {
 			event.stopPropagation();
@@ -62,7 +83,13 @@ export function buildPromptTitlebar(container: HTMLElement): void {
 
 	const titlebar = div({ class: "prompt-titlebar" });
 	const shadeBtn: HTMLButtonElement = iconButton("shadeButton", { type: "button" });
+	shadeBtn.setAttribute("aria-label", "Collapse prompt");
+	shadeBtn.title = "Collapse prompt";
 	const cancelButton = container.querySelector(".cancelButton");
+	if (cancelButton) {
+		cancelButton.setAttribute("aria-label", "Close prompt");
+		cancelButton.setAttribute("title", "Close prompt");
+	}
 	if (cancelButton) cancelButton.remove();
 
 	h2El.remove();
@@ -73,7 +100,12 @@ export function buildPromptTitlebar(container: HTMLElement): void {
 
 	let dragMoved = false;
 	const toggleShade = (): void => {
-		if (!dragMoved) container.classList.toggle("shaded");
+		if (!dragMoved) {
+			container.classList.toggle("shaded");
+			const shaded = container.classList.contains("shaded");
+			shadeBtn.setAttribute("aria-label", shaded ? "Expand prompt" : "Collapse prompt");
+			shadeBtn.title = shaded ? "Expand prompt" : "Collapse prompt";
+		}
 		dragMoved = false;
 	};
 	shadeBtn.addEventListener("click", (event: Event) => {
@@ -82,6 +114,15 @@ export function buildPromptTitlebar(container: HTMLElement): void {
 	});
 	h2El.addEventListener("click", () => {
 		if (container.classList.contains("shaded")) toggleShade();
+	});
+	// The heading doubles as an expand affordance when shaded, so it must be
+	// reachable by keyboard and expose the same name as the shade button.
+	h2El.setAttribute("tabindex", "0");
+	h2El.addEventListener("keydown", (event: KeyboardEvent) => {
+		if (event.key !== "Enter" && event.key !== " ") return;
+		if (!container.classList.contains("shaded")) return;
+		event.preventDefault();
+		toggleShade();
 	});
 	container.addEventListener("mousedown", () => {
 		dragMoved = false;
@@ -97,10 +138,14 @@ export abstract class BasePrompt implements Prompt {
 	public abstract readonly container: HTMLElement;
 	public closeCallback: ((prompt: Prompt) => unknown) | undefined = undefined;
 	public openAlongsideCallback: ((promptName: string) => void) | undefined = undefined;
-	protected readonly _cancelButton: HTMLButtonElement = iconButton("cancelButton");
+	protected readonly _cancelButton: HTMLButtonElement = iconButton("cancelButton", {
+		type: "button",
+		title: "Close prompt",
+	});
 	protected readonly _okayButton: HTMLButtonElement = actionButton("Commit");
 
 	constructor(protected _doc: SongDocument) {
+		this._cancelButton.setAttribute("aria-label", "Close prompt");
 		this._okayButton.addEventListener("click", this._onOkayClick);
 		this._cancelButton.addEventListener("click", this._onCancelClick);
 	}
@@ -129,10 +174,10 @@ export abstract class BasePrompt implements Prompt {
 	}
 
 	public whenKeyPressed = (event: KeyboardEvent): void => {
-		if ((<Element>event.target).tagName !== "BUTTON" && event.keyCode === 13) {
+		if (isCommitKey(event)) {
 			event.preventDefault();
 			this._saveChanges();
-		} else if (event.keyCode === 27) {
+		} else if (event.key === "Escape") {
 			event.preventDefault();
 			this._close();
 		}
@@ -147,8 +192,18 @@ export abstract class BasePrompt implements Prompt {
 			extra?: (event: KeyboardEvent) => boolean;
 		},
 	): void {
-		if ((<Element>event.target).tagName !== "BUTTON" && event.keyCode === 13) {
+		if (isCommitKey(event)) {
+			event.preventDefault();
 			this._saveChanges();
+			return;
+		}
+		// Escape must close from every prompt that routes keys through this
+		// helper. Without it, only the global fallback in keyboard-handler
+		// closed the dialog, and that path fires only while the prompt owns
+		// key routing, so Escape silently did nothing when focus moved.
+		if (event.key === "Escape") {
+			event.preventDefault();
+			this._close();
 			return;
 		}
 		if (event.keyCode === 32 && options?.togglePlay) {
@@ -183,11 +238,6 @@ export abstract class BasePrompt implements Prompt {
 
 	public buildTitlebar(): void {
 		buildPromptTitlebar(this.container);
-	}
-
-	public animateExit(callback: () => void): void {
-		this.container.classList.add("exiting");
-		this.container.addEventListener("animationend", callback, { once: true });
 	}
 
 	protected abstract _saveChanges(): void;

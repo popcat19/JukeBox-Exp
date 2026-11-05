@@ -20,14 +20,6 @@ export interface Prompt {
 	closeWithoutUndo?: (() => void) | undefined;
 	closeCallback?: ((prompt: Prompt) => unknown) | undefined;
 	openAlongsideCallback?: ((promptName: string) => void) | undefined;
-	animateExit?: ((callback: () => void) => void) | undefined;
 	requestPaneLeave?: (() => boolean) | undefined;
 	requestPaneClose?: (() => boolean) | undefined;
-	// Number of times the manager has routed an 'open' call to
-	// this prompt. The first invocation (spawn) is count 1, the
-	// second is count 2, etc. Used to suppress the 88x 'raise'
-	// flash on the very first open — the entering animation is
-	// the feedback for the spawn, and flashing 88x on top of it
-	// would be redundant.
-	openCount?: number;
 }
