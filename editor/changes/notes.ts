@@ -23,7 +23,6 @@ import { tagInstrumentWithModule } from "../../synth/socket/instrument-tagging";
 import { Config, type Dictionary } from "../../synth/synth-config";
 import { Change, ChangeGroup, ChangeSequence, UndoableChange } from "../core/change";
 import type { SongDocument } from "../song-document";
-import type { Slider } from "../ui";
 import {
 	discardInvalidPatternInstruments,
 	patternsContainSameInstruments,
@@ -1644,15 +1643,21 @@ export class ChangeDragSelectedNotes extends ChangeSequence {
 	}
 }
 
+export interface ModRecordingSlider {
+	readonly input: { value: string };
+	getValueBeforeProspectiveChange(): number;
+	updateValue(value: number): void;
+}
+
 export class ChangeHoldingModRecording extends Change {
 	public storedChange: Change | null;
 	public storedValues: number[] | null;
-	public storedSlider: Slider | null;
+	public storedSlider: ModRecordingSlider | null;
 	constructor(
 		_doc: SongDocument,
 		storedChange: Change | null,
 		storedValues: number[] | null,
-		slider: Slider | null,
+		slider: ModRecordingSlider | null,
 	) {
 		super();
 		this.storedChange = storedChange;

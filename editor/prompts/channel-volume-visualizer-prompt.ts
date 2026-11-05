@@ -15,15 +15,15 @@ import {
 	renderPlayhead,
 	renderTimeline,
 } from "../../player/player-timeline";
-import type { PlayerUI } from "../../player/player-ui";
 import { ColorConfig } from "../../shared/color-config";
 import { hexToRgb } from "../../shared/color-utils";
 import { events } from "../../shared/events";
 import { spectrumCanvas } from "../../shared/spectrum";
+import type { TimelineSurface } from "../../shared/timeline-surface";
 import type { ChannelState } from "../../synth/channel-state";
 import { Config } from "../../synth/config/index";
 import { getInstrumentTypeName } from "../../synth/config/instrument-registry";
-import { forwardRealFourierTransform } from "../../synth/fft";
+import { forwardRealFourierTransform } from "../../shared/fft";
 import { EditorConfig } from "../config/editor-config";
 import type { PromptEditorRefs } from "../core/prompt-manager";
 import type { SongDocument } from "../song-document";
@@ -1103,18 +1103,18 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 		}
 	}
 
-	// Minimal PlayerUI adapter exposing only the timeline-related fields
-	// renderTimeline / renderPlayhead touch. The full PlayerUI has many
+	// Minimal timeline surface exposing only the fields
+	// renderTimeline / renderPlayhead touch. The full player UI has many
 	// more fields (buttons, sliders) that the background overlay does not
-	// need; the cast bypasses the missing optional members.
-	private _playerUI(): PlayerUI {
+	// need.
+	private _timelineSurface(): TimelineSurface {
 		return {
 			synth: this._doc.synth,
 			timeline: this._playerTimelineSvg,
 			playhead: this._playerPlayhead,
 			timelineContainer: this._playerTimelineContainer,
 			visualizationContainer: this._playerVizContainer,
-		} as unknown as PlayerUI;
+		};
 	}
 
 	// Swap-and-pop removal used by renderPlayhead's note-flash cleanup.
@@ -1225,7 +1225,7 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 						barCount,
 						visEnd + ChannelVolumeVisualizerPrompt.PLAYER_OVERSCAN,
 					);
-					const ui = this._playerUI();
+					const ui = this._timelineSurface();
 					renderTimeline(
 						ui,
 						true,
@@ -1246,7 +1246,10 @@ export class ChannelVolumeVisualizerPrompt extends BasePrompt {
 					this._playerRenderedStart >= 0 &&
 					this._playerFrameToggle
 				) {
-					renderPlayhead(this._playerUI(), ChannelVolumeVisualizerPrompt._removeAt);
+					renderPlayhead(
+						this._timelineSurface(),
+						ChannelVolumeVisualizerPrompt._removeAt,
+					);
 				}
 			}
 		}

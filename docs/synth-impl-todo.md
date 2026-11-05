@@ -24,7 +24,7 @@ a real space.
 real-time. Well-documented technique. IR files packaged as assets
 or loaded from URL.
 
-**Effort:** moderate (~1 week). FFT infrastructure in `synth/fft.ts`
+**Effort:** moderate (~1 week). FFT infrastructure in `shared/fft.ts`
 is a starting point but needs partitioned real-time convolution.
 
 **Files touched:** `synth/synthesis/effects.ts` (new effect block),
@@ -115,12 +115,12 @@ Compute target frequency envelope from a reference sample (e.g. extracted
 from a SoundFont). Apply spectral tilt + notch filters to FM output to
 match the target.
 
-FFT infrastructure already exists in `synth/fft.ts`.
+FFT infrastructure already exists in `shared/fft.ts`.
 
 **Effort:** moderate (~3-4 days). Analysis is offline (per-preset during
 finetuning), filtering is real-time biquads.
 
-**Files touched:** `synth/fft.ts` (may need extension), preset finetuning
+**Files touched:** `shared/fft.ts` (may need extension), preset finetuning
 workflow scripts, `synth/synthesis/effects.ts`.
 
 ### 8. Formant filter bank

@@ -87,7 +87,7 @@ Upstream has a single `synth/synth.ts`. This fork splits it into modules:
 | `InstrumentState` class (extracted from synth.ts) | `synth/instrument-state.ts` |
 | `ChannelState` class (extracted from synth.ts) | `synth/channel-state.ts` |
 | Shared filter coefficients and volume utilities | `synth/synth-shared.ts` |
-| Shared with upstream (unchanged) | `synth/deque.ts`, `synth/fft.ts`, `synth/filtering.ts` |
+| Shared with upstream (unchanged) | `synth/deque.ts`, `shared/fft.ts`, `synth/filtering.ts` |
 
 ## `synth/` fork-only additions
 
@@ -152,7 +152,7 @@ All fork files use kebab-case. Key upstream-to-fork name translations:
 | `Layout.ts` | `editor/ui/layout.ts` |
 | `style.ts` | `editor/rendering/style.ts` |
 | `Deque.ts` | `synth/deque.ts` |
-| `FFT.ts` | `synth/fft.ts` |
+| `FFT.ts` | `shared/fft.ts` |
 | `filtering.ts` | `synth/filtering.ts` |
 | `global/Events.ts` | `shared/events.ts` |
 | `global/Oscilloscope.ts` | `shared/oscilloscope.ts` |

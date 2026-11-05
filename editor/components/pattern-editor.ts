@@ -53,6 +53,7 @@ import {
 	ChangeGrainSize,
 	ChangeGranular,
 	ChangeHoldingModRecording,
+	type ModRecordingSlider,
 	ChangeNoteAdded,
 	ChangeNoteFilterSimpleCut,
 	ChangeNoteFilterSimplePeak,
@@ -88,7 +89,6 @@ import { prettyNumber } from "../config/editor-config";
 import { type Change, ChangeSequence, type UndoableChange } from "../core/change";
 import type { SongDocument } from "../song-document";
 import type { SongEditor } from "../song-editor";
-import type { Slider } from "../ui";
 import { EnvelopeEditor } from "./envelope-editor";
 import { Piano } from "./piano";
 
@@ -1836,7 +1836,7 @@ export class PatternEditor {
 		const applyToEnvelopeTargets: number[] = [];
 		let applyValues: number[] = [];
 		let toApply: boolean = true;
-		let slider: Slider | null = null;
+		let slider: ModRecordingSlider | null = null;
 
 		// Special case, treat null change as Song volume.
 		if (change == null) {

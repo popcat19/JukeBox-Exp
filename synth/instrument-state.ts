@@ -9,7 +9,7 @@
 
 import { Deque } from "./deque";
 import { EnvelopeComputer } from "./envelope-computer";
-import { inverseRealFourierTransform, scaleElementsByFactor } from "./fft";
+import { inverseRealFourierTransform, scaleElementsByFactor } from "../shared/fft";
 import { DynamicBiquadFilter } from "./filtering";
 import { type FilterControlPoint, FilterSettings, Instrument } from "./instruments";
 import { Synth } from "./synth";

@@ -15,7 +15,7 @@ import {
 	fastFourierTransform,
 	forwardRealFourierTransform,
 	inverseRealFourierTransform,
-} from "../synth/fft";
+} from "../shared/fft";
 
 describe("scaleElementsByFactor", () => {
 	test("scales all elements by given factor", () => {

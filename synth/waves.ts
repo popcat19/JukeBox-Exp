@@ -7,7 +7,7 @@
 // - Manages wave hash caching for dirty-check optimization
 // - Implements grain envelope and delay logic for granular synthesis
 
-import { inverseRealFourierTransform, scaleElementsByFactor } from "./fft";
+import { inverseRealFourierTransform, scaleElementsByFactor } from "../shared/fft";
 import {
 	Config,
 	drawNoiseSpectrum,

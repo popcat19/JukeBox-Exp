@@ -59,7 +59,7 @@ an uncovered module.
 | `synth/channels.ts` | `tests/channels.test.ts` | Channel defaults, array initialization |
 | `synth/channel-state.ts` | `tests/channels.test.ts` | ChannelState defaults, audio buffer sizing |
 | `synth/deque.ts` | `tests/deque.test.ts` | FIFO/LIFO order, capacity expansion, index get/set/remove, empty errors |
-| `synth/fft.ts` | `tests/fft.test.ts` | scaleElementsByFactor, discreteFourierTransform, fastFourierTransform, forwardRealFourierTransform, inverseRealFourierTransform |
+| `shared/fft.ts` | `tests/fft.test.ts` | scaleElementsByFactor, discreteFourierTransform, fastFourierTransform, forwardRealFourierTransform, inverseRealFourierTransform |
 | `synth/waves.ts` | `tests/waves.test.ts` | SpectrumWave constructor/reset/hash, SpectrumWaveState getCustomWave caching |
 | `synth/envelope-computer.ts` | `tests/envelope-computer.test.ts` | Constructor, reset, clearEnvelopes, computeEnvelope static (none, twang, lfo, decay, blip, linear, fall, punch, inverse, bounds), computePitchEnvelope, getLowpassCutoffDecayVolumeCompensation |
 | `synth/picked-string.ts` | `tests/picked-string.test.ts` | Constructor, reset, coefficient defaults |

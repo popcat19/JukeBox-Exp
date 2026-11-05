@@ -23,7 +23,6 @@
 - `synth-config.ts`, Defines core configuration constants, enums, and shared data for the synth engine
 - `synth-shared.ts`, Shared filter coefficients and volume utilities for the synth engine
 - `filtering.ts`, Computes digital IIR filter coefficients and analyzes frequency response
-- `fft.ts`, Implements real-valued Fourier transform and frequency analysis utilities
 - `waves.ts`, Generates custom waveform data for spectrum, harmonics, and granular synthesis
 - `picked-string.ts`, Physical string modeling for picked string synthesis
 - `deque.ts`, Implements a double-ended queue with dynamic circular buffer

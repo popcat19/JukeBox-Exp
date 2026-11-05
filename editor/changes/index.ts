@@ -94,6 +94,7 @@ export {
 	ChangeDuplicateSelectedReusedPatterns,
 	ChangeEnsurePatternExists,
 	ChangeHoldingModRecording,
+	type ModRecordingSlider,
 	ChangeMoveAndOverflowNotes,
 	ChangeMoveNotesSideways,
 	ChangeNoteAdded,

@@ -9,7 +9,7 @@
 // - Dynamic amplification with slow-decay peak hold (no constant 80% fill)
 // - 60fps update rate, always clean regardless of project size
 
-import { forwardRealFourierTransform } from "../synth/fft";
+import { forwardRealFourierTransform } from "./fft";
 import { ColorConfig } from "./color-config";
 import { events } from "./events";
 

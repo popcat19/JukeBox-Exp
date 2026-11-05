@@ -9,9 +9,10 @@
 
 import { SVG } from "imperative-html/dist/esm/elements-strict";
 import { ColorConfig } from "../shared/color-config";
+import type { TimelineSurface } from "../shared/timeline-surface";
 import type { Note, NotePin, Pattern } from "../synth";
 import { Config } from "../synth/synth-config";
-import { getLocalStorage, type PlayerUI } from "./player-ui";
+import { getLocalStorage } from "./player-ui";
 
 const { rect, path } = SVG;
 
@@ -65,7 +66,7 @@ export function invalidateVizWidthCache(): void {
 
 // Generic parameter required so caller can type the array element — not inferable from arguments alone
 export function renderTimeline(
-	ui: PlayerUI,
+	ui: TimelineSurface,
 	zoomEnabled: boolean,
 	removeFromUnorderedArray: <T>(array: T[], index: number) => void, // eslint-disable-line @typescript-eslint/no-unnecessary-type-parameters
 	startBar: number = 0,
@@ -264,7 +265,7 @@ let cachedVizWidth: number = -1;
 
 // Generic parameter required so caller can type the array element — not inferable from arguments alone
 export function renderPlayhead(
-	ui: PlayerUI,
+	ui: TimelineSurface,
 	removeFromUnorderedArray: <T>(array: T[], index: number) => void, // eslint-disable-line @typescript-eslint/no-unnecessary-type-parameters
 ): void {
 	if (ui.synth.song != null) {

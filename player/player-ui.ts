@@ -14,6 +14,7 @@ import { isPlayerThemeSyncMessage } from "../shared/player-theme-sync";
 import { spectrumCanvas } from "../shared/spectrum";
 import { buildDesignTokensCSS } from "../shared/styles/design-tokens";
 import { injectGlobalStyles } from "../shared/styles/inject";
+import type { TimelineSurface } from "../shared/timeline-surface";
 import { Synth } from "../synth";
 
 const { a, button, div, h1, input, canvas } = HTML;
@@ -45,8 +46,7 @@ export function setLocalStorage(key: string, value: string): void {
 	}
 }
 
-export interface PlayerUI {
-	synth: Synth;
+export interface PlayerUI extends TimelineSurface {
 	spectrum: spectrumCanvas;
 	titleText: HTMLHeadingElement;
 	editLink: HTMLAnchorElement;
@@ -59,10 +59,6 @@ export interface PlayerUI {
 	volumeSlider: HTMLInputElement;
 	zoomIcon: SVGSVGElement;
 	zoomButton: HTMLButtonElement;
-	timeline: SVGSVGElement;
-	playhead: HTMLDivElement;
-	timelineContainer: HTMLDivElement;
-	visualizationContainer: HTMLDivElement;
 	outVolumeBar: SVGRectElement;
 	outVolumeCap: SVGRectElement;
 	sampleLoadingBar: HTMLDivElement;
