@@ -8,6 +8,7 @@
 import type { BarScrollBar } from "../components/bar-scroll-bar";
 import type { FilterEditor } from "../components/filter-editor";
 import type { SongDocument } from "../song-document";
+import { frameScheduler } from "./frame-scheduler";
 
 const BAR_LABEL_THROTTLE = 5; // avoid text reflow every rAF
 
@@ -42,7 +43,7 @@ export class PlayerAnimator {
 		},
 	) {}
 
-	public animate = (): void => {
+	public animate = (): boolean => {
 		this._callbacks.modSliderUpdate();
 		if (this._doc.prefs.displayVolumeBar) {
 			this.volumeUpdate();
@@ -96,11 +97,8 @@ export class PlayerAnimator {
 			this._doc.synth.fadingOut ||
 			this._doc.synth.recording ||
 			this._doc.recordingModulators;
-		if (keepRunning) {
-			window.requestAnimationFrame(this.animate);
-		} else {
-			this._running = false;
-		}
+		if (!keepRunning) this._running = false;
+		return keepRunning;
 	};
 
 	// Arm the animation loop. Idempotent: no-op when already running.
@@ -110,7 +108,7 @@ export class PlayerAnimator {
 	public start = (): void => {
 		if (this._running) return;
 		this._running = true;
-		window.requestAnimationFrame(this.animate);
+		frameScheduler.register(this.animate);
 	};
 	private _running: boolean = false;
 

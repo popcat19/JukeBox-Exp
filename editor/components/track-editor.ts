@@ -12,6 +12,7 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 import { ColorConfig } from "../../shared/color-config";
 import { Config } from "../../synth/synth-config";
 import { isMobile } from "../config/editor-config";
+import { frameScheduler } from "../core/frame-scheduler";
 import type { SongDocument } from "../song-document";
 import type { SongEditor } from "../song-editor";
 import { ChannelRow } from "./channel-row";
@@ -151,7 +152,7 @@ export class TrackEditor {
 		private _doc: SongDocument,
 		private _songEditor: SongEditor,
 	) {
-		window.requestAnimationFrame(this._animatePlayhead);
+		frameScheduler.register(this._animatePlayhead);
 		this._svg.addEventListener("mousedown", this._whenMousePressed);
 		document.addEventListener("mousemove", this._whenMouseMoved);
 		document.addEventListener("mouseup", this._whenMouseReleased);
@@ -286,7 +287,6 @@ export class TrackEditor {
 			this._renderedPlayhead = playhead;
 			this._playhead.setAttribute("x", `${playhead}`);
 		}
-		window.requestAnimationFrame(this._animatePlayhead);
 	};
 
 	public movePlayheadToMouse(): boolean {

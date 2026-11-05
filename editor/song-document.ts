@@ -81,6 +81,7 @@ export class SongDocument {
 	public _waitingToUpdateState: boolean = false;
 
 	constructor() {
+		this.notifier.flushGate = () => !this.recordingModulators;
 		this.notifier.watch(this._validateDocState);
 
 		ColorConfig.setTheme(this.prefs.colorTheme);

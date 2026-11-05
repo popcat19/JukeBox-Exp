@@ -15,6 +15,7 @@ export {
 export { DrumsetSetup, DrumsetSetupHost } from "./drumset-setup";
 export { EventListenerSetup, EventListenerSetupHost } from "./event-listener-setup";
 export { FmOperatorSetup, FmOperatorSetupHost } from "./fm-operator-setup";
+export { FrameScheduler, frameScheduler } from "./frame-scheduler";
 export { KeyboardHandler } from "./keyboard-handler";
 export { MenuHandler, MenuHandlerHost } from "./menu-handler";
 export { ModSliderRegistry } from "./mod-slider-registry";

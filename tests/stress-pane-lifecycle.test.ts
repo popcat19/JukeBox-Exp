@@ -2,6 +2,7 @@
 //
 // Purpose: Verifies Navigator stress panes release deferred browser work on disposal.
 
+import { frameScheduler } from "../editor/core/frame-scheduler";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { Window } from "happy-dom";
@@ -24,9 +25,14 @@ beforeAll(() => {
 	}
 	originalMutationObserver = globalThis.MutationObserver;
 	originalResizeObserver = globalThis.ResizeObserver;
+	frameScheduler.configure(
+		() => 0,
+		() => {},
+	);
 });
 
 afterAll(() => {
+	frameScheduler.configure();
 	globalThis.MutationObserver = originalMutationObserver;
 	globalThis.ResizeObserver = originalResizeObserver;
 	if (registeredHappyDom) GlobalRegistrator.unregister();

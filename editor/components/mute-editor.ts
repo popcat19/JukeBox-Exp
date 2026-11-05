@@ -622,7 +622,6 @@ export class MuteEditor {
 		this._doc.prefs.save();
 		this._updateLoopButton();
 		this._doc.notifier.changed();
-		this._doc.notifier.notifyWatchers();
 	};
 
 	private _updateLoopButton = (): void => {

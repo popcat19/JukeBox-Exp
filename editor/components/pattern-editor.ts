@@ -53,7 +53,6 @@ import {
 	ChangeGrainSize,
 	ChangeGranular,
 	ChangeHoldingModRecording,
-	type ModRecordingSlider,
 	ChangeNoteAdded,
 	ChangeNoteFilterSimpleCut,
 	ChangeNoteFilterSimplePeak,
@@ -84,9 +83,11 @@ import {
 	ChangeVibratoSpeed,
 	ChangeVolume,
 	type FilterMoveData,
+	type ModRecordingSlider,
 } from "../changes";
 import { prettyNumber } from "../config/editor-config";
 import { type Change, ChangeSequence, type UndoableChange } from "../core/change";
+import { frameScheduler } from "../core/frame-scheduler";
 import type { SongDocument } from "../song-document";
 import type { SongEditor } from "../song-editor";
 import { EnvelopeEditor } from "./envelope-editor";
@@ -416,7 +417,7 @@ export class PatternEditor {
 		if (this._interactive) {
 			this._updateCursorStatus();
 			this._updatePreview();
-			window.requestAnimationFrame(this._animatePlayhead);
+			frameScheduler.register(this._animatePlayhead);
 			this._svg.addEventListener("mousedown", this._whenMousePressed);
 			document.addEventListener("mousemove", this._whenMouseMoved);
 			document.addEventListener("mouseup", this._whenCursorReleased);
@@ -1573,8 +1574,6 @@ export class PatternEditor {
 		if (this._doc.currentPatternIsDirty) {
 			this._redrawNotePatterns();
 		}
-
-		window.requestAnimationFrame(this._animatePlayhead);
 	};
 
 	private _whenMouseOver = (_event: MouseEvent): void => {

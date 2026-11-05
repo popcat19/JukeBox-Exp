@@ -90,6 +90,7 @@ import { MenuHandler, type MenuHandlerHost } from "./core/menu-handler";
 
 const log = makeLogger("song-editor");
 
+import { frameScheduler } from "./core/frame-scheduler";
 import { type ModSliderProvider, ModSliderRegistry } from "./core/mod-slider-registry";
 import { ModulatorSetup, type ModulatorSetupHost } from "./core/modulator-setup";
 import { PlayerAnimator } from "./core/player-animator";
@@ -3368,7 +3369,7 @@ export class SongEditor
 		window.addEventListener("drop", _onDrop);
 
 		window.addEventListener("resize", this._onResize);
-		window.requestAnimationFrame(this.updatePlayButton);
+		frameScheduler.register(this.updatePlayButton);
 		// Animator loop is no longer started unconditionally; it self-gates
 		// on synth.playing/recording and is armed by SongPerformance's
 		// rAF observer on the rising edge of playback (see animatorStart).
@@ -4471,7 +4472,6 @@ export class SongEditor
 				this._playButton.style.display = "";
 			}
 		}
-		window.requestAnimationFrame(this.updatePlayButton);
 	};
 
 	private _onTrackAreaScroll(_event: Event): void {

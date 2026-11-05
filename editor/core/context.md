@@ -5,6 +5,7 @@
 - `history-manager.ts`, Abstraction over browser undo/redo history with dual-mode storage (window.history + sessionStorage fallback)
 - `change.ts`, Defines base classes for undoable and grouped editor mutations
 - `change-notifier.ts`, Implements observer pattern for notifying editor components of state changes
+- `frame-scheduler.ts`, Owns the single requestAnimationFrame loop for per-frame callbacks and once-per-frame notifier flushes
 - `change-dispatcher.ts`, Dispatches UI change events for instrument and song settings
 - `dev-inspector.ts`, Injects a hover-based DOM inspector that copies computed styles to clipboard
 - `debug-log.ts`, Lightweight conditional logger for diagnosing editor behavior

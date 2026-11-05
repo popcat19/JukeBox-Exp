@@ -12,6 +12,7 @@ import { HTML, SVG } from "imperative-html/dist/esm/elements-strict";
 import { ColorConfig } from "../../shared/color-config";
 import type { Instrument } from "../../synth";
 import { Config } from "../../synth/synth-config";
+import { frameScheduler } from "../core/frame-scheduler";
 import type { SongDocument } from "../song-document";
 
 export class Piano {
@@ -201,7 +202,7 @@ export class Piano {
 		this._doc.notifier.watch(this._documentChanged);
 		this._documentChanged();
 
-		window.requestAnimationFrame(this._onAnimationFrame);
+		frameScheduler.register(this._onAnimationFrame);
 	}
 
 	private _updateCursorPitch(): void {
@@ -396,8 +397,6 @@ export class Piano {
 	};
 
 	private _onAnimationFrame = (): void => {
-		window.requestAnimationFrame(this._onAnimationFrame);
-
 		let liveInputChanged: boolean = false;
 		let liveInputPitchCount: number = !this._doc.performance.pitchesAreTemporary()
 			? this._doc.synth.liveInputPitches.length
