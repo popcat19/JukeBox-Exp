@@ -25,6 +25,6 @@ Pure-function synth rendering extracted from `Synth` for the AudioWorklet thread
 ## Phase 5 scope
 
 - Worklet-native synth dispatch covers all instrument types except: picked-string, custom-chip-loopable, 6-op FM
-- Effects (echo, reverb, chorus, phaser, granular, distortion, bitcrusher, compressor) are handled on main thread only
+- Effects (echo, reverb, chorus, phaser, granular, distortion, bitcrusher, compressor, comb flanger) are handled on main thread only
 - Mod values are serialized in full from `Synth.modState`
 - Main-thread rendering is skipped when worklet active

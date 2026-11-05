@@ -176,3 +176,6 @@ export function effectsIncludeInvertWave(effects: number): boolean {
 export function effectsIncludeCompressor(effects: number): boolean {
 	return hasEffect(effects, EffectType.compressor);
 }
+export function effectsIncludeCombFlanger(effects: number): boolean {
+	return hasEffect(effects, EffectType.combFlanger);
+}

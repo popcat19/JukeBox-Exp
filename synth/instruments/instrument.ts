@@ -20,6 +20,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCombFlanger,
 	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
@@ -171,6 +172,12 @@ export class Instrument {
 	public compressorRelease: number = 8;
 	public compressorSync: number = 0;
 
+	public combDelay: number = 10;
+	public combFeedback: number = 8;
+	public combMix: number = 8;
+	public combRate: number = 4;
+	public combDepth: number = 4;
+
 	public algorithm: number = 0;
 	public feedbackType: number = 0;
 	public algorithm6Op: number = 1;
@@ -319,6 +326,12 @@ export class Instrument {
 		this.compressorAttack = 4;
 		this.compressorRelease = 8;
 		this.compressorSync = 0;
+
+		this.combDelay = 10;
+		this.combFeedback = 8;
+		this.combMix = 8;
+		this.combRate = 4;
+		this.combDepth = 4;
 
 		this.pan = Config.panCenter;
 		this.panDelay = 0;
@@ -641,6 +654,13 @@ export class Instrument {
 			instrumentObject.compressorAttack = this.compressorAttack;
 			instrumentObject.compressorRelease = this.compressorRelease;
 			instrumentObject.compressorSync = this.compressorSync;
+		}
+		if (effectsIncludeCombFlanger(this.effects)) {
+			instrumentObject.combDelay = this.combDelay;
+			instrumentObject.combFeedback = this.combFeedback;
+			instrumentObject.combMix = this.combMix;
+			instrumentObject.combRate = this.combRate;
+			instrumentObject.combDepth = this.combDepth;
 		}
 		if (effectsIncludePanning(this.effects)) {
 			instrumentObject.pan = Math.round(
@@ -1432,6 +1452,26 @@ export class Instrument {
 				Config.compressorSyncBeats.length,
 				instrumentObject.compressorSync | 0,
 			);
+		}
+
+		if (instrumentObject.combDelay !== undefined) {
+			this.combDelay = clamp(0, Config.combDelayRange, instrumentObject.combDelay | 0);
+		}
+		if (instrumentObject.combFeedback !== undefined) {
+			this.combFeedback = clamp(
+				0,
+				Config.combFeedbackRange,
+				instrumentObject.combFeedback | 0,
+			);
+		}
+		if (instrumentObject.combMix !== undefined) {
+			this.combMix = clamp(0, Config.combMixRange, instrumentObject.combMix | 0);
+		}
+		if (instrumentObject.combRate !== undefined) {
+			this.combRate = clamp(0, Config.combRateRange, instrumentObject.combRate | 0);
+		}
+		if (instrumentObject.combDepth !== undefined) {
+			this.combDepth = clamp(0, Config.combDepthRange, instrumentObject.combDepth | 0);
 		}
 
 		if (instrumentObject.upperNoteLimit !== undefined) {

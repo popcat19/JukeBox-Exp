@@ -8,6 +8,7 @@
 // - Handles operator synthesis and waveform generation
 
 import { inverseRealFourierTransform, scaleElementsByFactor } from "../shared/fft";
+import { CombFlangerDsp } from "./comb-flanger";
 import { CompressorDsp } from "./compressor";
 import { Deque } from "./deque";
 import { EnvelopeComputer } from "./envelope-computer";
@@ -21,6 +22,7 @@ import {
 	EnvelopeComputeIndex,
 	effectsIncludeBitcrusher,
 	effectsIncludeChorus,
+	effectsIncludeCombFlanger,
 	effectsIncludeCompressor,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
@@ -204,6 +206,7 @@ export class InstrumentState {
 	public invertWave: boolean = false;
 
 	public readonly compressor: CompressorDsp = new CompressorDsp();
+	public readonly combFlanger: CombFlangerDsp = new CombFlangerDsp();
 
 	public phaserSamples: Float32Array | null = null;
 	public phaserPrevInputs: Float32Array | null = null;
@@ -378,6 +381,7 @@ export class InstrumentState {
 				this.phaserPrevInputs[i] = 0.0;
 		}
 		this.compressor.reset();
+		this.combFlanger.reset();
 
 		this.volumeScale = 1.0;
 		this.aliases = false;
@@ -576,6 +580,7 @@ export class InstrumentState {
 		const usesReverb: boolean = effectsIncludeReverb(this.effects);
 		const usesPhaser: boolean = effectsIncludePhaser(this.effects);
 		const usesCompressor: boolean = effectsIncludeCompressor(this.effects);
+		const usesCombFlanger: boolean = effectsIncludeCombFlanger(this.effects);
 
 		let granularChance: number = 0;
 		if (usesGranular) {
@@ -1687,6 +1692,17 @@ export class InstrumentState {
 					this.compressor.trigger();
 				}
 			}
+		}
+
+		if (usesCombFlanger) {
+			this.combFlanger.configure(
+				instrument.combDelay,
+				instrument.combFeedback,
+				instrument.combMix,
+				instrument.combRate,
+				instrument.combDepth,
+				samplesPerSecond,
+			);
 		}
 
 		if (usesReverb) {

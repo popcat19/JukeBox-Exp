@@ -6,7 +6,7 @@
 - `channel-row.ts`, Renders individual channel rows in the track editor view
 - `command-palette.ts`, Runs shared commands from a transient compact keyboard-first palette
 - `editor-layout.ts`, Main editor layout composing pattern, track, and settings areas
-- `effects-panel.ts`, Audio effects controls (ring mod, granular, echo, phaser, compressor, etc.)
+- `effects-panel.ts`, Audio effects controls (ring mod, granular, echo, phaser, compressor, comb flanger, etc.)
 - `envelope-editor.ts`, Renders envelope editor UI for instrument automation envelopes
 - `fade-in-out-editor.ts`, Renders editor UI for configuring instrument fade-in and fade-out envelopes
 - `filter-editor.ts`, Renders interactive EQ and note filter control point editor

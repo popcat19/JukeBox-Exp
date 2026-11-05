@@ -17,6 +17,7 @@ Purpose: bun:test test files covering editor, synth, and shared modules.
 - `debug-tools.test.ts`, Tests for __jukebox__ debug utilities
 - `audio-backend.test.ts`, AudioBackend play-intent deactivation guard, underrun recovery refill, and gesture listener re-registration with a fake host and real ring
 - `compressor.test.ts`, Unit and round-trip tests for the compressor effect (gain reduction, sync ducking, base64 and JSON serialization)
+- `comb-flanger.test.ts`, Unit and round-trip tests for the comb/flanger effect (comb periodicity, mix 0 passthrough, base64 and JSON serialization, byte-identical legacy re-encode)
 - `dsp-utils.test.ts`, Unit tests for pure DSP utility functions (applyFilters, sanitizeDelayLine, findRandomZeroCrossing)
 - `filtering.test.ts`, Unit tests for digital filter coefficient computation and frequency response
 - `input-inventory.test.ts`, Unit tests for input binding inventory and concern modules

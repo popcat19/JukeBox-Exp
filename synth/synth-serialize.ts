@@ -40,6 +40,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCombFlanger,
 	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
@@ -493,6 +494,17 @@ export function toBase64StringImpl(song: SongLike): string {
 					base64IntToCharCode[instrument.compressorAttack],
 					base64IntToCharCode[instrument.compressorRelease],
 					base64IntToCharCode[instrument.compressorSync],
+				);
+			}
+
+			if (effectsIncludeCombFlanger(instrument.effects)) {
+				buffer.push(
+					SongTagCode.combFlanger,
+					base64IntToCharCode[instrument.combDelay],
+					base64IntToCharCode[instrument.combFeedback],
+					base64IntToCharCode[instrument.combMix],
+					base64IntToCharCode[instrument.combRate],
+					base64IntToCharCode[instrument.combDepth],
 				);
 			}
 

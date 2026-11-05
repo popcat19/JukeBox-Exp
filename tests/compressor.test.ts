@@ -115,7 +115,7 @@ describe("compressor config", () => {
 
 	test("compressor sits one bit past the 18-bit effects bitfield", () => {
 		expect(EffectType.compressor).toBe(18);
-		expect(EffectType.length).toBe(19);
+		expect(EffectType.length).toBe(20);
 	});
 });
 

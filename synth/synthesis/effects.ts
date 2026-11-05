@@ -4,7 +4,7 @@
 //
 // This module:
 // - Builds effects synthesis source strings including distortion, bitcrusher,
-//   panning, chorus, echo, reverb, granular, ring modulation, phaser, compressor, and EQ
+//   panning, chorus, echo, reverb, granular, ring modulation, phaser, compressor, comb/flanger, and EQ
 
 import { Config, GranularEnvelopeType } from "../synth-config";
 
@@ -21,6 +21,7 @@ export function buildEffectsSource(
 	usesPhaser: boolean,
 	usesInvertWave: boolean,
 	usesCompressor: boolean = false,
+	usesCombFlanger: boolean = false,
 ): string {
 	let effectsSource: string =
 		"return (synth, outputDataL, outputDataR, bufferIndex, runLength, instrumentState) => {";
@@ -144,6 +145,12 @@ export function buildEffectsSource(
 	if (usesCompressor) {
 		effectsSource += `
                 const compressor = instrumentState.compressor;
+                `;
+	}
+
+	if (usesCombFlanger) {
+		effectsSource += `
+                const combFlanger = instrumentState.combFlanger;
                 `;
 	}
 
@@ -455,6 +462,12 @@ export function buildEffectsSource(
 	if (usesCompressor) {
 		effectsSource += `
                         sample = compressor.process(sample);
+                    `;
+	}
+
+	if (usesCombFlanger) {
+		effectsSource += `
+                        sample = combFlanger.process(sample);
                     `;
 	}
 

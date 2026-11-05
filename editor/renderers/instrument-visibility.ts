@@ -16,6 +16,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCombFlanger,
 	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
@@ -262,6 +263,21 @@ export interface InstrumentVisibilityRefs {
 	compressorSyncRow: HTMLElement;
 	compressorSyncSlider: Slider;
 	compressorSyncInputBox: HTMLInputElement;
+	combDelayRow: HTMLElement;
+	combDelaySlider: Slider;
+	combDelayInputBox: HTMLInputElement;
+	combFeedbackRow: HTMLElement;
+	combFeedbackSlider: Slider;
+	combFeedbackInputBox: HTMLInputElement;
+	combMixRow: HTMLElement;
+	combMixSlider: Slider;
+	combMixInputBox: HTMLInputElement;
+	combRateRow: HTMLElement;
+	combRateSlider: Slider;
+	combRateInputBox: HTMLInputElement;
+	combDepthRow: HTMLElement;
+	combDepthSlider: Slider;
+	combDepthInputBox: HTMLInputElement;
 
 	invertWaveRow: HTMLElement;
 
@@ -791,6 +807,30 @@ export function applyInstrumentVisibility(
 		refs.compressorAttackRow.style.display = "none";
 		refs.compressorReleaseRow.style.display = "none";
 		refs.compressorSyncRow.style.display = "none";
+	}
+
+	if (effectsIncludeCombFlanger(instrument.effects)) {
+		refs.combDelayRow.style.display = "";
+		refs.combDelaySlider.updateValue(instrument.combDelay);
+		refs.combDelayInputBox.value = `${instrument.combDelay}`;
+		refs.combFeedbackRow.style.display = "";
+		refs.combFeedbackSlider.updateValue(instrument.combFeedback);
+		refs.combFeedbackInputBox.value = `${instrument.combFeedback}`;
+		refs.combMixRow.style.display = "";
+		refs.combMixSlider.updateValue(instrument.combMix);
+		refs.combMixInputBox.value = `${instrument.combMix}`;
+		refs.combRateRow.style.display = "";
+		refs.combRateSlider.updateValue(instrument.combRate);
+		refs.combRateInputBox.value = `${instrument.combRate}`;
+		refs.combDepthRow.style.display = "";
+		refs.combDepthSlider.updateValue(instrument.combDepth);
+		refs.combDepthInputBox.value = `${instrument.combDepth}`;
+	} else {
+		refs.combDelayRow.style.display = "none";
+		refs.combFeedbackRow.style.display = "none";
+		refs.combMixRow.style.display = "none";
+		refs.combRateRow.style.display = "none";
+		refs.combDepthRow.style.display = "none";
 	}
 
 	if (effectsIncludeInvertWave(instrument.effects)) {

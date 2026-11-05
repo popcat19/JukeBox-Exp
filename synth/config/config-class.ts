@@ -262,6 +262,17 @@ export class Config {
 	public static readonly compressorAttackRange: number = 16;
 	public static readonly compressorReleaseRange: number = 16;
 	public static readonly compressorSyncBeats: ReadonlyArray<number> = [0, 2, 1, 0.5, 0.25];
+	public static readonly combDelayRange: number = 32;
+	public static readonly combDelayBaseMs: number = 0.25;
+	public static readonly combDelayGrowth: number = 1.15;
+	public static readonly combFeedbackRange: number = 16;
+	public static readonly combFeedbackMax: number = 0.95;
+	public static readonly combMixRange: number = 16;
+	public static readonly combRateRange: number = 16;
+	public static readonly combRateBaseHz: number = 0.05;
+	public static readonly combRateGrowth: number = 1.4;
+	public static readonly combDepthRange: number = 16;
+	public static readonly combDepthMax: number = 0.9;
 	public static readonly phaserMinStages: number = 0;
 	public static readonly phaserMaxStages: number = 32;
 	public static readonly beatsPerBarMin: number = 1;
@@ -2117,6 +2128,7 @@ export class Config {
 		"",
 		"invert wave",
 		"compressor",
+		"comb flanger",
 	];
 	public static readonly effectOrder: ReadonlyArray<EffectType> = [
 		EffectType.panning,
@@ -2136,6 +2148,7 @@ export class Config {
 		EffectType.phaser,
 		EffectType.invertWave,
 		EffectType.compressor,
+		EffectType.combFlanger,
 		EffectType.noteRange,
 	];
 	public static readonly noteSizeMax: number = 6;

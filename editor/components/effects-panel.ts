@@ -1,6 +1,6 @@
 // Effects Panel
 //
-// Purpose: Audio effects controls (ring mod, granular, echo, phaser, compressor, etc.)
+// Purpose: Audio effects controls (ring mod, granular, echo, phaser, compressor, comb flanger, etc.)
 //
 // This module:
 // - Creates effect sliders and controls for instruments
@@ -10,6 +10,11 @@
 import { HTML } from "imperative-html/dist/esm/elements-strict";
 import { Config } from "../../synth/synth-config";
 import {
+	ChangeCombDelay,
+	ChangeCombDepth,
+	ChangeCombFeedback,
+	ChangeCombMix,
+	ChangeCombRate,
 	ChangeCompressorAttack,
 	ChangeCompressorRatio,
 	ChangeCompressorRelease,
@@ -116,6 +121,23 @@ export class EffectsPanel {
 	public readonly compressorSyncWidget: SliderNumWidget;
 	public readonly compressorSyncSlider: Slider;
 	public readonly compressorSyncRow: HTMLDivElement;
+
+	// Comb flanger
+	public readonly combDelayWidget: SliderNumWidget;
+	public readonly combDelaySlider: Slider;
+	public readonly combDelayRow: HTMLDivElement;
+	public readonly combFeedbackWidget: SliderNumWidget;
+	public readonly combFeedbackSlider: Slider;
+	public readonly combFeedbackRow: HTMLDivElement;
+	public readonly combMixWidget: SliderNumWidget;
+	public readonly combMixSlider: Slider;
+	public readonly combMixRow: HTMLDivElement;
+	public readonly combRateWidget: SliderNumWidget;
+	public readonly combRateSlider: Slider;
+	public readonly combRateRow: HTMLDivElement;
+	public readonly combDepthWidget: SliderNumWidget;
+	public readonly combDepthSlider: Slider;
+	public readonly combDepthRow: HTMLDivElement;
 
 	// Container
 	public readonly container: HTMLDivElement;
@@ -445,6 +467,81 @@ export class EffectsPanel {
 		this.compressorSyncSlider = this.compressorSyncWidget.slider;
 		this.compressorSyncRow = this.compressorSyncWidget.row;
 
+		this.combDelayWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) => new ChangeCombDelay(doc, oldValue, newValue),
+			0,
+			Config.combDelayRange - 1,
+			10,
+			"Comb Delay:",
+			() => {
+				onOpenPrompt("combDelay");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().combDelay },
+		);
+		this.combDelaySlider = this.combDelayWidget.slider;
+		this.combDelayRow = this.combDelayWidget.row;
+
+		this.combFeedbackWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) => new ChangeCombFeedback(doc, oldValue, newValue),
+			0,
+			Config.combFeedbackRange - 1,
+			8,
+			"Comb Fdbk:",
+			() => {
+				onOpenPrompt("combFeedback");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().combFeedback },
+		);
+		this.combFeedbackSlider = this.combFeedbackWidget.slider;
+		this.combFeedbackRow = this.combFeedbackWidget.row;
+
+		this.combMixWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) => new ChangeCombMix(doc, oldValue, newValue),
+			0,
+			Config.combMixRange - 1,
+			8,
+			"Comb Mix:",
+			() => {
+				onOpenPrompt("combMix");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().combMix },
+		);
+		this.combMixSlider = this.combMixWidget.slider;
+		this.combMixRow = this.combMixWidget.row;
+
+		this.combRateWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) => new ChangeCombRate(doc, oldValue, newValue),
+			0,
+			Config.combRateRange - 1,
+			4,
+			"Comb Rate:",
+			() => {
+				onOpenPrompt("combRate");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().combRate },
+		);
+		this.combRateSlider = this.combRateWidget.slider;
+		this.combRateRow = this.combRateWidget.row;
+
+		this.combDepthWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) => new ChangeCombDepth(doc, oldValue, newValue),
+			0,
+			Config.combDepthRange - 1,
+			4,
+			"Comb Depth:",
+			() => {
+				onOpenPrompt("combDepth");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().combDepth },
+		);
+		this.combDepthSlider = this.combDepthWidget.slider;
+		this.combDepthRow = this.combDepthWidget.row;
+
 		// Main container
 		this.container = div(
 			{ class: "editor-effects" },
@@ -461,6 +558,11 @@ export class EffectsPanel {
 			this.compressorAttackRow,
 			this.compressorReleaseRow,
 			this.compressorSyncRow,
+			this.combDelayRow,
+			this.combFeedbackRow,
+			this.combMixRow,
+			this.combRateRow,
+			this.combDepthRow,
 		);
 	}
 
@@ -530,5 +632,25 @@ export class EffectsPanel {
 
 	public updateCompressorSync(value: number): void {
 		this.compressorSyncWidget.updateValue(value);
+	}
+
+	public updateCombDelay(value: number): void {
+		this.combDelayWidget.updateValue(value);
+	}
+
+	public updateCombFeedback(value: number): void {
+		this.combFeedbackWidget.updateValue(value);
+	}
+
+	public updateCombMix(value: number): void {
+		this.combMixWidget.updateValue(value);
+	}
+
+	public updateCombRate(value: number): void {
+		this.combRateWidget.updateValue(value);
+	}
+
+	public updateCombDepth(value: number): void {
+		this.combDepthWidget.updateValue(value);
 	}
 }

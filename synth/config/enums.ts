@@ -101,8 +101,9 @@ export enum EffectType {
 	phaser,
 	octaveShift, // Studio Box port placeholder just in case
 	invertWave,
-	// Bit 18 does not fit the three-character effects bitfield, so compressor is serialized through its own song tag.
+	// Bits 18 and above do not fit the three-character effects bitfield, so compressor and combFlanger are serialized through their own song tags.
 	compressor,
+	combFlanger,
 	length,
 }
 

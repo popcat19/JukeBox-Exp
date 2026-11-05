@@ -11,7 +11,7 @@ import { Config } from "../synth-config";
 import { buildEffectsSource } from "../synthesis/effects";
 import type { PluginHost } from "./host";
 
-const cache: Function[] = Array(1 << 12).fill(undefined);
+const cache: Function[] = Array(1 << 13).fill(undefined);
 
 export function getEffectsSynthFunction(
 	usesDistortion: boolean,
@@ -26,6 +26,7 @@ export function getEffectsSynthFunction(
 	usesPhaser: boolean,
 	usesInvertWave: boolean,
 	usesCompressor: boolean,
+	usesCombFlanger: boolean,
 	signature: number,
 	synth: PluginHost,
 ): Function {
@@ -44,6 +45,7 @@ export function getEffectsSynthFunction(
 			usesPhaser,
 			usesInvertWave,
 			usesCompressor,
+			usesCombFlanger,
 		);
 		fn = new Function("Config", "Synth", source)(Config, synth);
 		cache[signature] = fn;

@@ -19,6 +19,7 @@
 - `tone.ts`, Tone data structure for active synthesis voices
 - `channel-state.ts`, Per-channel synthesis state container
 - `compressor.ts`, Per-instrument compressor DSP with level-detected gain reduction and beat-synced ducking
+- `comb-flanger.ts`, Per-instrument feedback comb DSP with LFO-modulated delay for flanging
 - `instrument-state.ts`, Per-instrument DSP state and audio buffer management
 - `envelope-computer.ts`, Envelope computation for tone lifecycle and modulation
 - `synth-config.ts`, Defines core configuration constants, enums, and shared data for the synth engine

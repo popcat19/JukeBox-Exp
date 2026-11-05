@@ -354,6 +354,25 @@ export class SongEditor
 	private readonly _compressorSyncRow: HTMLDivElement = this._effectsPanel.compressorSyncRow;
 	private readonly _compressorSyncInputBox: HTMLInputElement =
 		this._effectsPanel.compressorSyncWidget.inputBox;
+	private readonly _combDelaySlider: Slider = this._effectsPanel.combDelaySlider;
+	private readonly _combDelayRow: HTMLDivElement = this._effectsPanel.combDelayRow;
+	private readonly _combDelayInputBox: HTMLInputElement =
+		this._effectsPanel.combDelayWidget.inputBox;
+	private readonly _combFeedbackSlider: Slider = this._effectsPanel.combFeedbackSlider;
+	private readonly _combFeedbackRow: HTMLDivElement = this._effectsPanel.combFeedbackRow;
+	private readonly _combFeedbackInputBox: HTMLInputElement =
+		this._effectsPanel.combFeedbackWidget.inputBox;
+	private readonly _combMixSlider: Slider = this._effectsPanel.combMixSlider;
+	private readonly _combMixRow: HTMLDivElement = this._effectsPanel.combMixRow;
+	private readonly _combMixInputBox: HTMLInputElement = this._effectsPanel.combMixWidget.inputBox;
+	private readonly _combRateSlider: Slider = this._effectsPanel.combRateSlider;
+	private readonly _combRateRow: HTMLDivElement = this._effectsPanel.combRateRow;
+	private readonly _combRateInputBox: HTMLInputElement =
+		this._effectsPanel.combRateWidget.inputBox;
+	private readonly _combDepthSlider: Slider = this._effectsPanel.combDepthSlider;
+	private readonly _combDepthRow: HTMLDivElement = this._effectsPanel.combDepthRow;
+	private readonly _combDepthInputBox: HTMLInputElement =
+		this._effectsPanel.combDepthWidget.inputBox;
 	private readonly _rhythmSelect: HTMLSelectElement = this._songSettingsPanel.rhythmSelect;
 	private readonly _pitchedPresetSelect: HTMLButtonElement = (() => {
 		const btn = buildPresetButton("pitchPresetSelect");
@@ -1903,6 +1922,11 @@ export class SongEditor
 		this._compressorAttackRow,
 		this._compressorReleaseRow,
 		this._compressorSyncRow,
+		this._combDelayRow,
+		this._combFeedbackRow,
+		this._combMixRow,
+		this._combRateRow,
+		this._combDepthRow,
 		this._invertWaveRow,
 		this._upperNoteLimitRow,
 		this._lowerNoteLimitRow,
@@ -3647,6 +3671,21 @@ export class SongEditor
 			compressorSyncRow: this._compressorSyncRow,
 			compressorSyncSlider: this._compressorSyncSlider,
 			compressorSyncInputBox: this._compressorSyncInputBox,
+			combDelayRow: this._combDelayRow,
+			combDelaySlider: this._combDelaySlider,
+			combDelayInputBox: this._combDelayInputBox,
+			combFeedbackRow: this._combFeedbackRow,
+			combFeedbackSlider: this._combFeedbackSlider,
+			combFeedbackInputBox: this._combFeedbackInputBox,
+			combMixRow: this._combMixRow,
+			combMixSlider: this._combMixSlider,
+			combMixInputBox: this._combMixInputBox,
+			combRateRow: this._combRateRow,
+			combRateSlider: this._combRateSlider,
+			combRateInputBox: this._combRateInputBox,
+			combDepthRow: this._combDepthRow,
+			combDepthSlider: this._combDepthSlider,
+			combDepthInputBox: this._combDepthInputBox,
 			invertWaveRow: this._invertWaveRow,
 			upperNoteLimitRow: this._upperNoteLimitRow,
 			upperNoteLimitInputBox: this._upperNoteLimitInputBox,

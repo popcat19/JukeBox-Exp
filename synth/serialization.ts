@@ -210,7 +210,7 @@ export enum SongTagCode {
 	opl3OperatorAdsr = CharCode.NUM_0, // per-operator ADSR for OPL3 (4 ops x 4 values)
 	// 	                    = CharCode.NUM_1,
 	compressor = CharCode.NUM_2, // per-instrument compressor settings; EffectType.compressor is bit 18 and cannot fit the effects bitfield
-	// 	                    = CharCode.NUM_3,
+	combFlanger = CharCode.NUM_3, // per-instrument comb/flanger settings; EffectType.combFlanger is bit 19 and cannot fit the effects bitfield
 	// 	                    = CharCode.NUM_4,
 	// 	                    = CharCode.NUM_5,
 	// 	                    = CharCode.NUM_6,

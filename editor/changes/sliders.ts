@@ -359,6 +359,51 @@ export class ChangeCompressorSync extends ChangeInstrumentSlider {
 	}
 }
 
+export class ChangeCombDelay extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.combDelay = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCombFeedback extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.combFeedback = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCombMix extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.combMix = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCombRate extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.combRate = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCombDepth extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.combDepth = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
 export class ChangeStringSustain extends ChangeInstrumentSlider {
 	constructor(doc: SongDocument, oldValue: number, newValue: number) {
 		super(doc);

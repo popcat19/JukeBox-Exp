@@ -199,6 +199,11 @@ export interface InstrumentSnapshot {
 	readonly compressorAttack: number;
 	readonly compressorRelease: number;
 	readonly compressorSync: number;
+	readonly combDelay: number;
+	readonly combFeedback: number;
+	readonly combMix: number;
+	readonly combRate: number;
+	readonly combDepth: number;
 
 	// FM
 	readonly algorithm: number;
@@ -706,6 +711,11 @@ export function snapshotInstrument(inst: Instrument): InstrumentSnapshot {
 		compressorAttack: inst.compressorAttack,
 		compressorRelease: inst.compressorRelease,
 		compressorSync: inst.compressorSync,
+		combDelay: inst.combDelay,
+		combFeedback: inst.combFeedback,
+		combMix: inst.combMix,
+		combRate: inst.combRate,
+		combDepth: inst.combDepth,
 
 		algorithm: inst.algorithm,
 		feedbackType: inst.feedbackType,

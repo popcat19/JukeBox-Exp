@@ -123,6 +123,11 @@ export class TipPrompt extends BasePrompt {
 		compressorAttack: "Compressor Attack",
 		compressorRelease: "Compressor Release",
 		compressorSync: "Compressor Pump",
+		combDelay: "Comb Delay",
+		combFeedback: "Comb Feedback",
+		combMix: "Comb Mix",
+		combRate: "Comb Rate",
+		combDepth: "Comb Depth",
 		upperNoteLimit: "Upper Note Limit",
 		lowerNoteLimit: "Lower Note Limit",
 		invertWave: "Invert Wave",
@@ -1044,6 +1049,36 @@ export class TipPrompt extends BasePrompt {
 				return div(
 					p(
 						`Ducks the instrument on every beat of the song for a pumping, sidechain-style effect. Settings are off, every 2 beats, every beat, every half beat, and every quarter beat. Triggers follow the song position, so they stay on the beat when the tempo changes.`,
+					),
+				);
+			case "combDelay":
+				return div(
+					p(
+						`Base delay time of the comb filter, from about 0.25 ms to 19 ms in exponential steps. The delay sets the pitch of the resonance: the filter boosts the frequency 1000 / delay in Hz and its multiples, so short delays sound bright and metallic while long delays sound hollow.`,
+					),
+				);
+			case "combFeedback":
+				return div(
+					p(
+						`How much of the delayed signal is fed back into the comb. Higher values sharpen the resonant peaks and lengthen the ringing. The wet signal is level-compensated so high feedback does not get much louder.`,
+					),
+				);
+			case "combMix":
+				return div(
+					p(
+						`Balance between the dry signal and the comb output. At 0 the instrument passes through unchanged.`,
+					),
+				);
+			case "combRate":
+				return div(
+					p(
+						`Speed of the low-frequency oscillator that sweeps the delay time, from about 0.05 Hz to 8 Hz. Has no effect when Depth is 0.`,
+					),
+				);
+			case "combDepth":
+				return div(
+					p(
+						`How far the low-frequency oscillator sweeps the delay time around its base value, up to 90% of it. Depth 0 gives a static comb, higher depth gives the classic flanger sweep.`,
 					),
 				);
 			case "upperNoteLimit":

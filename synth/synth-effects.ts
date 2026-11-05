@@ -4,7 +4,7 @@
 // and invokes the cached generated effects function
 //
 // This module:
-// - Checks instrumentState effect flags (distortion, bitcrusher, compressor, EQ, panning, etc.)
+// - Checks instrumentState effect flags (distortion, bitcrusher, compressor, comb flanger, EQ, panning, etc.)
 // - Builds a bitmask signature for cache lookup
 // - Delegates to getEffectsSynthFunction which returns a cached compiled function
 
@@ -14,6 +14,7 @@ import { Synth } from "./synth";
 import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChorus,
+	effectsIncludeCombFlanger,
 	effectsIncludeCompressor,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
@@ -46,6 +47,7 @@ export function effectsSynth(
 	const usesInvertWave: boolean =
 		effectsIncludeInvertWave(instrumentState.effects) && instrumentState.invertWave;
 	const usesCompressor: boolean = effectsIncludeCompressor(instrumentState.effects);
+	const usesCombFlanger: boolean = effectsIncludeCombFlanger(instrumentState.effects);
 	let signature: number = 0;
 	if (usesDistortion) signature = signature | 1;
 	signature = signature << 1;
@@ -70,6 +72,8 @@ export function effectsSynth(
 	if (usesInvertWave) signature = signature | 1;
 	signature = signature << 1;
 	if (usesCompressor) signature = signature | 1;
+	signature = signature << 1;
+	if (usesCombFlanger) signature = signature | 1;
 
 	const ef: Function = getEffectsSynthFunction(
 		usesDistortion,
@@ -84,6 +88,7 @@ export function effectsSynth(
 		usesPhaser,
 		usesInvertWave,
 		usesCompressor,
+		usesCombFlanger,
 		signature,
 		Synth,
 	);
