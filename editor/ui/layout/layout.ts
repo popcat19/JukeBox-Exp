@@ -190,7 +190,7 @@ export class Layout {
 				.beepboxEditor {
 					grid-template-columns: 512px minmax(0, 1fr) 30em;
 					grid-template-rows: minmax(481px, 1fr) min-content;
-					grid-template-areas: "track-area pattern-area settings-area";
+					grid-template-areas: "track-area pattern-area settings-area" "track-area track-area track-area";
 				}
 				.beepboxEditor .track-area {
 					width: 100%;
@@ -370,7 +370,7 @@ export class Layout {
 				.beepboxEditor {
 					grid-template-columns: minmax(0, 1fr) 190px;
 					grid-template-rows: minmax(481px, 1fr) minmax(0, min-content);
-					grid-template-areas: "pattern-area settings-area" "track-area";
+					grid-template-areas: "pattern-area settings-area" "track-area track-area";
 				}
 				.beepboxEditor .trackAndMuteContainer {
 					width: 100%;
