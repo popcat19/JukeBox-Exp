@@ -10,7 +10,9 @@
 //   Mode B (queue): Legacy postMessage need-data callback as fallback.
 // - Fills the ring buffer proactively (rAF-driven, no need-data callback)
 // - Handles AudioContext suspension/resumption on user gesture
-// - Deactivates audio after a live-input timeout
+// - Deactivates audio after a live-input timeout, unless a play request
+//   is pending or inside the post-play grace window
+// - Answers worklet underruns with an immediate synchronous refill
 
 import { AudioRingBuffer } from "./audio-ring-buffer";
 import { AUDIO_WORKLET_PROCESSOR_CODE } from "./audio-worklet-processor";
@@ -49,6 +51,10 @@ export class AudioBackend {
 	private _host: AudioBackendHost | null = null;
 	private _activateAudioPromise: Promise<void> | null = null;
 	private _gestureListenerAdded: boolean = false;
+	private _removeGestureListeners: (() => void) | null = null;
+	private _playIntent: boolean = false;
+	private _playGraceUntil: number = 0;
+	private _underrunRecoveries: number = 0;
 	private _lastSpectrumUpdateTime: number = 0;
 	private _spectrumDecayStarted: boolean = false;
 	private _logNeedDataCount: number = 0;
@@ -70,6 +76,8 @@ export class AudioBackend {
 	private _useSab: boolean = false;
 	private static readonly SPECTRUM_UPDATE_INTERVAL_MS: number = 1000 / 60;
 	private static readonly FILL_BUDGET_MS: number = 16;
+	/** Window after play()/resume during which idle deactivation is suppressed. */
+	public static readonly PLAY_GRACE_MS: number = 2000;
 	// 8 slots gives ~7 fills of runway at 2048 samples each. Enough for
 	// dense patterns where synthesize() takes up to ~7ms before the rAF
 	// fill loop loses ground. Each slot is ~16KB (2048 × 2ch × 4B), total
@@ -95,6 +103,44 @@ export class AudioBackend {
 
 	public get currentBufferSize(): number {
 		return this._currentBufferSize;
+	}
+
+	/** Number of worklet underruns answered with a synchronous refill. */
+	public get underrunRecoveries(): number {
+		return this._underrunRecoveries;
+	}
+
+	public get hasPlayIntent(): boolean {
+		return this._playIntent;
+	}
+
+	/** Set synchronously at the top of play(), before isPlayingSong is
+	 *  observable, so fill/need-data handlers cannot deactivate the backend
+	 *  while activation and warmup are still pending. */
+	public beginPlayIntent(): void {
+		this._playIntent = true;
+		this._playGraceUntil = performance.now() + AudioBackend.PLAY_GRACE_MS;
+	}
+
+	/** Clears the pending flag once isPlayingSong is true; the grace window
+	 *  keeps covering the first fills. */
+	public settlePlayIntent(): void {
+		this._playIntent = false;
+		this._playGraceUntil = performance.now() + AudioBackend.PLAY_GRACE_MS;
+	}
+
+	/** Drops intent and grace immediately (play failed or pause requested). */
+	public cancelPlayIntent(): void {
+		this._playIntent = false;
+		this._playGraceUntil = 0;
+	}
+
+	/** True when nothing is playing, fading or pending and live input expired. */
+	public shouldDeactivate(host: AudioBackendHost): boolean {
+		if (this._playIntent) return false;
+		const now: number = performance.now();
+		if (now < this._playGraceUntil) return false;
+		return !host.isPlayingSong() && !host.isFadingOut() && now >= host.liveInputEndTime();
 	}
 
 	public get context(): AudioContext | null {
@@ -230,19 +276,10 @@ export class AudioBackend {
 			this._host = host;
 			this._dbg("AudioContext sampleRate:", ctx.sampleRate);
 
-			if (ctx.state === "suspended" && !this._gestureListenerAdded) {
-				this._gestureListenerAdded = true;
-				const resume = () => {
-					if (this.audioCtx && this.audioCtx.state === "suspended") {
-						this.audioCtx.resume().then(() => {
-							this._dbg("AudioContext resumed via user gesture");
-						});
-					}
-				};
-				window.addEventListener("click", resume, { once: true });
-				window.addEventListener("keydown", resume, { once: true });
-				this._dbg("Added one-time gesture listener");
-			}
+			this._ensureGestureListener();
+			ctx.onstatechange = () => {
+				if (ctx.state === "suspended") this._ensureGestureListener();
+			};
 
 			if (this._workletModuleUrl == null) {
 				const blob = new Blob([AUDIO_WORKLET_PROCESSOR_CODE], {
@@ -328,6 +365,7 @@ export class AudioBackend {
 					}
 				} else if (msg.type === "underrun") {
 					this._logUnderrun(msg as Record<string, unknown>);
+					this.recoverFromUnderrun(host);
 				}
 			};
 
@@ -355,13 +393,41 @@ export class AudioBackend {
 		}
 	}
 
+	private _ensureGestureListener(): void {
+		const ctx: AudioContext | null = this.audioCtx;
+		if (ctx == null || ctx.state !== "suspended" || this._gestureListenerAdded) return;
+		this._gestureListenerAdded = true;
+		const remove = (): void => {
+			window.removeEventListener("click", resume);
+			window.removeEventListener("keydown", resume);
+			this._removeGestureListeners = null;
+			this._gestureListenerAdded = false;
+		};
+		const resume = (): void => {
+			remove();
+			if (this.audioCtx && this.audioCtx.state === "suspended") {
+				this.audioCtx.resume().then(() => {
+					this._dbg("AudioContext resumed via user gesture");
+				});
+			}
+		};
+		window.addEventListener("click", resume);
+		window.addEventListener("keydown", resume);
+		this._removeGestureListeners = remove;
+		this._dbg("Added one-time gesture listener");
+	}
+
 	public async resumeContext(): Promise<void> {
 		if (this.audioCtx && this.audioCtx.state === "suspended") {
+			this._playGraceUntil = Math.max(
+				this._playGraceUntil,
+				performance.now() + AudioBackend.PLAY_GRACE_MS,
+			);
 			try {
 				await this.audioCtx.resume();
 				this._dbg("AudioContext resumed, state:", this.audioCtx.state);
 			} catch (_e) {
-				// ignore
+				this._ensureGestureListener();
 			}
 		}
 	}
@@ -369,6 +435,7 @@ export class AudioBackend {
 	public deactivate(): void {
 		this._dbg("deactivate called");
 		this._cancelFillLoop();
+		this._removeGestureListeners?.();
 		if (this._workletNode != null && this.audioCtx != null) {
 			this._dbg("Disconnecting worklet node...");
 			this._workletNode.port.postMessage({ type: "stop" });
@@ -395,6 +462,7 @@ export class AudioBackend {
 			this._computeWorkletNode = null;
 		}
 		if (this.audioCtx != null) {
+			this.audioCtx.onstatechange = null;
 			if (this.audioCtx.close) {
 				this._dbg("Closing AudioContext...");
 				this.audioCtx.close();
@@ -448,6 +516,16 @@ export class AudioBackend {
 		}
 	}
 
+	/** Answers a worklet underrun with an immediate synchronous refill of
+	 *  every free slot. Heads are not reset, so queued audio is kept. SAB
+	 *  mode only; queue mode keeps its need-data path. */
+	public recoverFromUnderrun(host: AudioBackendHost): void {
+		this._underrunRecoveries++;
+		if (!this._useSab || this._ringBuffer == null) return;
+		if (!this._playIntent && !host.isPlayingSong() && !host.isFadingOut()) return;
+		this._fillAllFreeSlotsInternal(host, true, "underrun", true, host.isPlayingSong());
+	}
+
 	// ── Queue mode (legacy need-data callback) ──
 
 	private _onWorkletNeedData(host: AudioBackendHost): void {
@@ -457,7 +535,7 @@ export class AudioBackend {
 			this._dbg(`need-data #${this._logNeedDataCount}, isPlayingSong:`, isPlayingSong);
 		}
 
-		if (!isPlayingSong && !host.isFadingOut() && performance.now() >= host.liveInputEndTime()) {
+		if (this.shouldDeactivate(host)) {
 			this.deactivate();
 			return;
 		}
@@ -528,8 +606,7 @@ export class AudioBackend {
 		if (ring == null) return;
 
 		if (!skipDeactivate) {
-			const playing: boolean = host.isPlayingSong();
-			if (!playing && !host.isFadingOut() && performance.now() >= host.liveInputEndTime()) {
+			if (this.shouldDeactivate(host)) {
 				this._dbg("No playback, no fade, no live input — deactivating");
 				this.deactivate();
 				return;

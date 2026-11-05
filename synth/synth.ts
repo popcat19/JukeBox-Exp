@@ -1406,6 +1406,10 @@ export class Synth {
 		};
 	}
 
+	public get audioUnderrunRecoveries(): number {
+		return this._audio.underrunRecoveries;
+	}
+
 	private deactivateAudio(): void {
 		this._audio.deactivate();
 	}
@@ -1441,6 +1445,7 @@ export class Synth {
 			this._stopFadeSamplesRemaining,
 		);
 		this._audio.cancelSpectrumDecay();
+		if (!this.isPlayingSong) this._audio.beginPlayIntent();
 
 		// Cancel any pending stop fade and clean up immediately
 		// Also reset the song-end flag so it doesn't leak across
@@ -1452,26 +1457,36 @@ export class Synth {
 		}
 
 		if (this.isPlayingSong) return;
-		this.modState.initModFilters(this.song);
-		this.modState.computeLatestModValues(this.song, this.bar, this.beat, this.part);
-		await this.activateAudio();
-		if (!this._audio.isActive) {
-			this._dbgWarn("play: audio not active after activateAudio, forcing re-activation");
+		try {
+			this.modState.initModFilters(this.song);
+			this.modState.computeLatestModValues(this.song, this.bar, this.beat, this.part);
 			await this.activateAudio();
+			if (!this._audio.isActive) {
+				this._dbgWarn("play: audio not active after activateAudio, forcing re-activation");
+				await this.activateAudio();
+			}
+			await this._audio.resumeContext();
+			this.warmUpSynthesizer(this.song);
+			this._needsLeadIn = true;
+			this.isPlayingSong = true;
+			// Drop any stale ring slots, then start the rAF fill loop while
+			// isPlayingSong is already true so the first fill renders beat 0.
+			this._audio.resetRingForPlayback();
+			this._audio.settlePlayIntent();
+		} catch (e) {
+			this._audio.cancelPlayIntent();
+			throw e;
 		}
-		await this._audio.resumeContext();
-		this.warmUpSynthesizer(this.song);
-		this._needsLeadIn = true;
-		this.isPlayingSong = true;
-		// Drop any stale ring slots, then start the rAF fill loop while
-		// isPlayingSong is already true so the first fill renders beat 0.
-		this._audio.resetRingForPlayback();
 		this._dbg("isPlayingSong set to true, playhead:", this.playheadInternal, "bar:", this.bar);
 	}
 
 	public pause(): void {
 		this._dbg("pause() called, isPlayingSong:", this.isPlayingSong);
-		if (!this.isPlayingSong) return;
+		if (!this.isPlayingSong) {
+			this._audio.cancelPlayIntent();
+			return;
+		}
+		this._audio.cancelPlayIntent();
 		this._fadeoutPlayheadSnapshot = this.playhead;
 		this.isPlayingSong = false;
 		this.isRecording = false;

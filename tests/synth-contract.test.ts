@@ -191,6 +191,9 @@ describe("Category B: AudioBackendHost live-read contract", () => {
 				cancelSpectrumDecay: () => void;
 				resumeContext: () => Promise<void>;
 				resetRingForPlayback: () => void;
+				beginPlayIntent: () => void;
+				settlePlayIntent: () => void;
+				cancelPlayIntent: () => void;
 			};
 			warmUpSynthesizer: (song: ReturnType<typeof createTestSong>) => void;
 		};
@@ -211,6 +214,9 @@ describe("Category B: AudioBackendHost live-read contract", () => {
 			cancelSpectrumDecay: () => {},
 			resumeContext: () => Promise.resolve(),
 			resetRingForPlayback: () => events.push(`reset:${synth.samplesPerSecond}`),
+			beginPlayIntent: () => {},
+			settlePlayIntent: () => {},
+			cancelPlayIntent: () => {},
 		};
 		internals.warmUpSynthesizer = () => events.push(`warmup:${synth.samplesPerSecond}`);
 		synthConstructor._computeWorkletEnabled = () => true;

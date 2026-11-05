@@ -15,6 +15,7 @@ Purpose: bun:test test files covering editor, synth, and shared modules.
 - `ui-states.test.ts`, Contract tests for the PMD state/surface/interaction token layer (states.ts, surfaces.ts, interactions.ts) plus source-grep proofs for refactored buttons and loop-button migrations
 - `frame-scheduler.test.ts`, Unit tests for FrameScheduler callbacks, flush dedupe, and ChangeNotifier frame flush
 - `debug-tools.test.ts`, Tests for __jukebox__ debug utilities
+- `audio-backend.test.ts`, AudioBackend play-intent deactivation guard, underrun recovery refill, and gesture listener re-registration with a fake host and real ring
 - `compressor.test.ts`, Unit and round-trip tests for the compressor effect (gain reduction, sync ducking, base64 and JSON serialization)
 - `dsp-utils.test.ts`, Unit tests for pure DSP utility functions (applyFilters, sanitizeDelayLine, findRandomZeroCrossing)
 - `filtering.test.ts`, Unit tests for digital filter coefficient computation and frequency response

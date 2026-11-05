@@ -70,6 +70,7 @@ Browser console on a dev build:
 __jukebox__.validate()               // Cross-type contamination, stale refs
 __jukebox__.record.start()/stop()    // Capture ops, dump replay script
 __jukebox__.replay(ops)              // Deterministic restore, navigation, and paste
+__jukebox__.audio()                  // Worklet underrun recovery counter
 ```
 
 ## TypeScript projects

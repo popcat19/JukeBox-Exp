@@ -36,6 +36,7 @@ interface DebugAPI {
 		dump: () => void;
 	};
 	replay: (ops: ReplayOp[]) => void;
+	audio: () => { underrunRecoveries: number };
 }
 
 export function installDebugTools(doc: SongDocument): void {
@@ -273,6 +274,10 @@ export function installDebugTools(doc: SongDocument): void {
 					console.log(`  ${o.op}`, o.args ?? "");
 				});
 			},
+		},
+
+		audio(): { underrunRecoveries: number } {
+			return { underrunRecoveries: doc.synth.audioUnderrunRecoveries };
 		},
 
 		pmd(hue?: number, isDark?: boolean): object {
