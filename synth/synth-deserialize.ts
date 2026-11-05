@@ -2288,7 +2288,8 @@ export function fromBase64StringImpl(
 						instrument.convertLegacySettings(legacySettings, forceSimpleFilter);
 					} else {
 						// BeepBox currently uses three base64 characters at 6 bits each for a bitfield representing all the enabled effects.
-						if (EffectType.length > 18) throw new Error();
+						if (EffectType.compressor !== 18 || EffectType.length !== 19)
+							throw new Error();
 						if (fromJukeBox || (fromSlarmoosBox && !beforeFive)) {
 							instrument.effects =
 								(base64CharCodeToInt[compressed.charCodeAt(charIndex++)] << 12) |
@@ -2756,6 +2757,40 @@ export function fromBase64StringImpl(
 					}
 					// Clamp the range.
 					instrument.effects &= (1 << EffectType.length) - 1;
+				}
+				break;
+			case SongTagCode.compressor:
+				{
+					const instrument: Instrument =
+						song.channels[instrumentChannelIterator].instruments[
+							instrumentIndexIterator
+						];
+					instrument.effects |= 1 << EffectType.compressor;
+					instrument.compressorThreshold = clamp(
+						0,
+						Config.compressorThresholdRange,
+						base64CharCodeToInt[compressed.charCodeAt(charIndex++)],
+					);
+					instrument.compressorRatio = clamp(
+						0,
+						Config.compressorRatios.length,
+						base64CharCodeToInt[compressed.charCodeAt(charIndex++)],
+					);
+					instrument.compressorAttack = clamp(
+						0,
+						Config.compressorAttackRange,
+						base64CharCodeToInt[compressed.charCodeAt(charIndex++)],
+					);
+					instrument.compressorRelease = clamp(
+						0,
+						Config.compressorReleaseRange,
+						base64CharCodeToInt[compressed.charCodeAt(charIndex++)],
+					);
+					instrument.compressorSync = clamp(
+						0,
+						Config.compressorSyncBeats.length,
+						base64CharCodeToInt[compressed.charCodeAt(charIndex++)],
+					);
 				}
 				break;
 			case SongTagCode.volume:

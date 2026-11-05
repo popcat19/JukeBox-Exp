@@ -27,6 +27,7 @@ an uncovered module.
 | `synth/synth-config.ts` | `tests/song-document-integration.test.ts` | hasEffect, effectsIncludeTransition, effectsIncludeChord |
 | `synth/synth-math.ts` | `tests/synth-math.test.ts` | getLFOAmplitude, computeChordExpression, operatorAmplitudeCurve, adjacentNotesHaveMatchingPitches, volume conversion |
 | `synth/synth-shared.ts` | `tests/synth-shared.test.ts` | instrumentVolumeToVolumeMult, noteSizeToVolumeMult |
+| `synth/compressor.ts` | `tests/compressor.test.ts` | gain reduction, sync ducking, serialization round-trip |
 | `synth/dsp-utils.ts` | `tests/dsp-utils.test.ts` | applyFilters, sanitizeDelayLine, findRandomZeroCrossing |
 | `synth/filtering.ts` | `tests/filtering.test.ts` | FilterCoefficients, FrequencyResponse, DynamicBiquadFilter, warp functions |
 | `synth/notes.ts` | `tests/notes.test.ts` | Note, Pattern, makeNotePin |

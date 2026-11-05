@@ -40,6 +40,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
@@ -481,6 +482,17 @@ export function toBase64StringImpl(song: SongLike): string {
 				buffer.push(
 					base64IntToCharCode[instrument.lowerNoteLimit >> 6],
 					base64IntToCharCode[instrument.lowerNoteLimit & 0x3f],
+				);
+			}
+
+			if (effectsIncludeCompressor(instrument.effects)) {
+				buffer.push(
+					SongTagCode.compressor,
+					base64IntToCharCode[instrument.compressorThreshold],
+					base64IntToCharCode[instrument.compressorRatio],
+					base64IntToCharCode[instrument.compressorAttack],
+					base64IntToCharCode[instrument.compressorRelease],
+					base64IntToCharCode[instrument.compressorSync],
 				);
 			}
 

@@ -1,6 +1,6 @@
 // Effects Panel
 //
-// Purpose: Audio effects controls (ring mod, granular, echo, phaser, etc.)
+// Purpose: Audio effects controls (ring mod, granular, echo, phaser, compressor, etc.)
 //
 // This module:
 // - Creates effect sliders and controls for instruments
@@ -10,6 +10,11 @@
 import { HTML } from "imperative-html/dist/esm/elements-strict";
 import { Config } from "../../synth/synth-config";
 import {
+	ChangeCompressorAttack,
+	ChangeCompressorRatio,
+	ChangeCompressorRelease,
+	ChangeCompressorSync,
+	ChangeCompressorThreshold,
 	ChangeEchoDelay,
 	ChangeEchoSustain,
 	ChangeGrainAmounts,
@@ -94,6 +99,23 @@ export class EffectsPanel {
 	public readonly phaserStagesWidget: SliderNumWidget;
 	public readonly phaserStagesSlider: Slider;
 	public readonly phaserStagesRow: HTMLDivElement;
+
+	// Compressor
+	public readonly compressorThresholdWidget: SliderNumWidget;
+	public readonly compressorThresholdSlider: Slider;
+	public readonly compressorThresholdRow: HTMLDivElement;
+	public readonly compressorRatioWidget: SliderNumWidget;
+	public readonly compressorRatioSlider: Slider;
+	public readonly compressorRatioRow: HTMLDivElement;
+	public readonly compressorAttackWidget: SliderNumWidget;
+	public readonly compressorAttackSlider: Slider;
+	public readonly compressorAttackRow: HTMLDivElement;
+	public readonly compressorReleaseWidget: SliderNumWidget;
+	public readonly compressorReleaseSlider: Slider;
+	public readonly compressorReleaseRow: HTMLDivElement;
+	public readonly compressorSyncWidget: SliderNumWidget;
+	public readonly compressorSyncSlider: Slider;
+	public readonly compressorSyncRow: HTMLDivElement;
 
 	// Container
 	public readonly container: HTMLDivElement;
@@ -343,6 +365,86 @@ export class EffectsPanel {
 		this.phaserStagesSlider = this.phaserStagesWidget.slider;
 		this.phaserStagesRow = this.phaserStagesWidget.row;
 
+		this.compressorThresholdWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) =>
+				new ChangeCompressorThreshold(doc, oldValue, newValue),
+			0,
+			Config.compressorThresholdRange - 1,
+			12,
+			"Comp Thresh:",
+			() => {
+				onOpenPrompt("compressorThreshold");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().compressorThreshold },
+		);
+		this.compressorThresholdSlider = this.compressorThresholdWidget.slider;
+		this.compressorThresholdRow = this.compressorThresholdWidget.row;
+
+		this.compressorRatioWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) =>
+				new ChangeCompressorRatio(doc, oldValue, newValue),
+			0,
+			Config.compressorRatios.length - 1,
+			4,
+			"Comp Ratio:",
+			() => {
+				onOpenPrompt("compressorRatio");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().compressorRatio },
+		);
+		this.compressorRatioSlider = this.compressorRatioWidget.slider;
+		this.compressorRatioRow = this.compressorRatioWidget.row;
+
+		this.compressorAttackWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) =>
+				new ChangeCompressorAttack(doc, oldValue, newValue),
+			0,
+			Config.compressorAttackRange - 1,
+			4,
+			"Comp Attack:",
+			() => {
+				onOpenPrompt("compressorAttack");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().compressorAttack },
+		);
+		this.compressorAttackSlider = this.compressorAttackWidget.slider;
+		this.compressorAttackRow = this.compressorAttackWidget.row;
+
+		this.compressorReleaseWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) =>
+				new ChangeCompressorRelease(doc, oldValue, newValue),
+			0,
+			Config.compressorReleaseRange - 1,
+			8,
+			"Comp Release:",
+			() => {
+				onOpenPrompt("compressorRelease");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().compressorRelease },
+		);
+		this.compressorReleaseSlider = this.compressorReleaseWidget.slider;
+		this.compressorReleaseRow = this.compressorReleaseWidget.row;
+
+		this.compressorSyncWidget = new SliderNumWidget(
+			doc,
+			(oldValue: number, newValue: number) =>
+				new ChangeCompressorSync(doc, oldValue, newValue),
+			0,
+			Config.compressorSyncBeats.length - 1,
+			0,
+			"Comp Pump:",
+			() => {
+				onOpenPrompt("compressorSync");
+			},
+			{ getInstrumentValue: () => doc.getCurrentInstrumentObj().compressorSync },
+		);
+		this.compressorSyncSlider = this.compressorSyncWidget.slider;
+		this.compressorSyncRow = this.compressorSyncWidget.row;
+
 		// Main container
 		this.container = div(
 			{ class: "editor-effects" },
@@ -354,6 +456,11 @@ export class EffectsPanel {
 			this.phaserFreqRow,
 			this.phaserFeedbackRow,
 			this.phaserStagesRow,
+			this.compressorThresholdRow,
+			this.compressorRatioRow,
+			this.compressorAttackRow,
+			this.compressorReleaseRow,
+			this.compressorSyncRow,
 		);
 	}
 
@@ -403,5 +510,25 @@ export class EffectsPanel {
 
 	public updatePhaserStages(value: number): void {
 		this.phaserStagesWidget.updateValue(value);
+	}
+
+	public updateCompressorThreshold(value: number): void {
+		this.compressorThresholdWidget.updateValue(value);
+	}
+
+	public updateCompressorRatio(value: number): void {
+		this.compressorRatioWidget.updateValue(value);
+	}
+
+	public updateCompressorAttack(value: number): void {
+		this.compressorAttackWidget.updateValue(value);
+	}
+
+	public updateCompressorRelease(value: number): void {
+		this.compressorReleaseWidget.updateValue(value);
+	}
+
+	public updateCompressorSync(value: number): void {
+		this.compressorSyncWidget.updateValue(value);
 	}
 }

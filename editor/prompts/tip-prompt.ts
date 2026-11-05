@@ -118,6 +118,11 @@ export class TipPrompt extends BasePrompt {
 		phaserFreq: "Phaser Frequency",
 		phaserFeedback: "Phaser Feedback",
 		phaserStages: "Phaser Stages",
+		compressorThreshold: "Compressor Threshold",
+		compressorRatio: "Compressor Ratio",
+		compressorAttack: "Compressor Attack",
+		compressorRelease: "Compressor Release",
+		compressorSync: "Compressor Pump",
 		upperNoteLimit: "Upper Note Limit",
 		lowerNoteLimit: "Lower Note Limit",
 		invertWave: "Invert Wave",
@@ -1009,6 +1014,36 @@ export class TipPrompt extends BasePrompt {
 					),
 					p(
 						`The minimum value of this slider is 1, the reason being that 1 all-pass is the exact same as having no phaser at all, if there were 0 all-passes then the audio would cease to exist.`,
+					),
+				);
+			case "compressorThreshold":
+				return div(
+					p(
+						`Level above which the compressor reduces gain, in steps of 1.5 dB below full scale. Higher values compress more of the signal. Ignored while Pump is on.`,
+					),
+				);
+			case "compressorRatio":
+				return div(
+					p(
+						`How strongly signal above the threshold is reduced. While Pump is on, this sets the depth of the duck: ratio 1 does nothing and ratio 20 ducks to about 5% volume.`,
+					),
+				);
+			case "compressorAttack":
+				return div(
+					p(
+						`How quickly the compressor reacts to loud signal. While Pump is on, this is the time taken to duck after each trigger.`,
+					),
+				);
+			case "compressorRelease":
+				return div(
+					p(
+						`How quickly gain recovers once the signal falls below the threshold. While Pump is on, this is the time taken to return to full volume after each duck.`,
+					),
+				);
+			case "compressorSync":
+				return div(
+					p(
+						`Ducks the instrument on every beat of the song for a pumping, sidechain-style effect. Settings are off, every 2 beats, every beat, every half beat, and every quarter beat. Triggers follow the song position, so they stay on the beat when the tempo changes.`,
 					),
 				);
 			case "upperNoteLimit":

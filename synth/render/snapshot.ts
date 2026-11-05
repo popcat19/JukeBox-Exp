@@ -194,6 +194,11 @@ export interface InstrumentSnapshot {
 	readonly phaserFeedback: number;
 	readonly phaserStages: number;
 	readonly invertWave: boolean;
+	readonly compressorThreshold: number;
+	readonly compressorRatio: number;
+	readonly compressorAttack: number;
+	readonly compressorRelease: number;
+	readonly compressorSync: number;
 
 	// FM
 	readonly algorithm: number;
@@ -696,6 +701,11 @@ export function snapshotInstrument(inst: Instrument): InstrumentSnapshot {
 		phaserFeedback: inst.phaserFeedback,
 		phaserStages: inst.phaserStages,
 		invertWave: inst.invertWave,
+		compressorThreshold: inst.compressorThreshold,
+		compressorRatio: inst.compressorRatio,
+		compressorAttack: inst.compressorAttack,
+		compressorRelease: inst.compressorRelease,
+		compressorSync: inst.compressorSync,
 
 		algorithm: inst.algorithm,
 		feedbackType: inst.feedbackType,

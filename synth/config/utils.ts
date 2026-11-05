@@ -173,3 +173,6 @@ export function effectsIncludePhaser(effects: number): boolean {
 export function effectsIncludeInvertWave(effects: number): boolean {
 	return hasEffect(effects, EffectType.invertWave);
 }
+export function effectsIncludeCompressor(effects: number): boolean {
+	return hasEffect(effects, EffectType.compressor);
+}

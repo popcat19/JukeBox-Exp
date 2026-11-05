@@ -7,9 +7,10 @@
 // - Computes instrument-level effects (EQ, filters, distortion, etc.)
 // - Handles operator synthesis and waveform generation
 
+import { inverseRealFourierTransform, scaleElementsByFactor } from "../shared/fft";
+import { CompressorDsp } from "./compressor";
 import { Deque } from "./deque";
 import { EnvelopeComputer } from "./envelope-computer";
-import { inverseRealFourierTransform, scaleElementsByFactor } from "../shared/fft";
 import { DynamicBiquadFilter } from "./filtering";
 import { type FilterControlPoint, FilterSettings, Instrument } from "./instruments";
 import { Synth } from "./synth";
@@ -20,6 +21,7 @@ import {
 	EnvelopeComputeIndex,
 	effectsIncludeBitcrusher,
 	effectsIncludeChorus,
+	effectsIncludeCompressor,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
 	effectsIncludeGranular,
@@ -201,6 +203,8 @@ export class InstrumentState {
 
 	public invertWave: boolean = false;
 
+	public readonly compressor: CompressorDsp = new CompressorDsp();
+
 	public phaserSamples: Float32Array | null = null;
 	public phaserPrevInputs: Float32Array | null = null;
 	public phaserFeedbackMult: number = 0.0;
@@ -373,6 +377,7 @@ export class InstrumentState {
 			for (let i: number = 0; i < this.phaserPrevInputs.length; i++)
 				this.phaserPrevInputs[i] = 0.0;
 		}
+		this.compressor.reset();
 
 		this.volumeScale = 1.0;
 		this.aliases = false;
@@ -570,6 +575,7 @@ export class InstrumentState {
 		const usesEcho: boolean = effectsIncludeEcho(this.effects);
 		const usesReverb: boolean = effectsIncludeReverb(this.effects);
 		const usesPhaser: boolean = effectsIncludePhaser(this.effects);
+		const usesCompressor: boolean = effectsIncludeCompressor(this.effects);
 
 		let granularChance: number = 0;
 		if (usesGranular) {
@@ -1661,6 +1667,26 @@ export class InstrumentState {
 
 			this.phaserStages = phaserStagesStart;
 			this.phaserStagesDelta = (phaserStagesEnd - phaserStagesStart) / roundedSamplesPerTick;
+		}
+
+		if (usesCompressor) {
+			const syncBeats: number = Config.compressorSyncBeats[instrument.compressorSync];
+			const syncTicks: number = syncBeats * Config.partsPerBeat * Config.ticksPerPart;
+			this.compressor.configure(
+				instrument.compressorThreshold,
+				instrument.compressorRatio,
+				instrument.compressorAttack,
+				instrument.compressorRelease,
+				syncTicks > 0,
+				samplesPerSecond,
+			);
+			if (syncTicks > 0) {
+				const syncSlot: number = Math.floor(ticksIntoBar / syncTicks);
+				if (syncSlot !== this.compressor.lastSyncSlot) {
+					this.compressor.lastSyncSlot = syncSlot;
+					this.compressor.trigger();
+				}
+			}
 		}
 
 		if (usesReverb) {

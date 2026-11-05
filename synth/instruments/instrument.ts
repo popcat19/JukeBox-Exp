@@ -20,6 +20,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
@@ -164,6 +165,12 @@ export class Instrument {
 
 	public invertWave: boolean = false;
 
+	public compressorThreshold: number = 12;
+	public compressorRatio: number = 4;
+	public compressorAttack: number = 4;
+	public compressorRelease: number = 8;
+	public compressorSync: number = 0;
+
 	public algorithm: number = 0;
 	public feedbackType: number = 0;
 	public algorithm6Op: number = 1;
@@ -306,6 +313,12 @@ export class Instrument {
 		this.phaserMix = Config.phaserMixRange - 1;
 
 		this.invertWave = false;
+
+		this.compressorThreshold = 12;
+		this.compressorRatio = 4;
+		this.compressorAttack = 4;
+		this.compressorRelease = 8;
+		this.compressorSync = 0;
 
 		this.pan = Config.panCenter;
 		this.panDelay = 0;
@@ -621,6 +634,13 @@ export class Instrument {
 		}
 		if (effectsIncludeInvertWave(this.effects)) {
 			instrumentObject.invertWave = this.invertWave;
+		}
+		if (effectsIncludeCompressor(this.effects)) {
+			instrumentObject.compressorThreshold = this.compressorThreshold;
+			instrumentObject.compressorRatio = this.compressorRatio;
+			instrumentObject.compressorAttack = this.compressorAttack;
+			instrumentObject.compressorRelease = this.compressorRelease;
+			instrumentObject.compressorSync = this.compressorSync;
 		}
 		if (effectsIncludePanning(this.effects)) {
 			instrumentObject.pan = Math.round(
@@ -1376,6 +1396,42 @@ export class Instrument {
 
 		if (instrumentObject.invertWave !== undefined) {
 			this.invertWave = instrumentObject.invertWave;
+		}
+
+		if (instrumentObject.compressorThreshold !== undefined) {
+			this.compressorThreshold = clamp(
+				0,
+				Config.compressorThresholdRange,
+				instrumentObject.compressorThreshold | 0,
+			);
+		}
+		if (instrumentObject.compressorRatio !== undefined) {
+			this.compressorRatio = clamp(
+				0,
+				Config.compressorRatios.length,
+				instrumentObject.compressorRatio | 0,
+			);
+		}
+		if (instrumentObject.compressorAttack !== undefined) {
+			this.compressorAttack = clamp(
+				0,
+				Config.compressorAttackRange,
+				instrumentObject.compressorAttack | 0,
+			);
+		}
+		if (instrumentObject.compressorRelease !== undefined) {
+			this.compressorRelease = clamp(
+				0,
+				Config.compressorReleaseRange,
+				instrumentObject.compressorRelease | 0,
+			);
+		}
+		if (instrumentObject.compressorSync !== undefined) {
+			this.compressorSync = clamp(
+				0,
+				Config.compressorSyncBeats.length,
+				instrumentObject.compressorSync | 0,
+			);
 		}
 
 		if (instrumentObject.upperNoteLimit !== undefined) {

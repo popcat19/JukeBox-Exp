@@ -209,7 +209,7 @@ export enum SongTagCode {
 	socketPayload = CharCode.Z, // socket module id + params (JSON blob for url round-trip)
 	opl3OperatorAdsr = CharCode.NUM_0, // per-operator ADSR for OPL3 (4 ops x 4 values)
 	// 	                    = CharCode.NUM_1,
-	// 	                    = CharCode.NUM_2,
+	compressor = CharCode.NUM_2, // per-instrument compressor settings; EffectType.compressor is bit 18 and cannot fit the effects bitfield
 	// 	                    = CharCode.NUM_3,
 	// 	                    = CharCode.NUM_4,
 	// 	                    = CharCode.NUM_5,

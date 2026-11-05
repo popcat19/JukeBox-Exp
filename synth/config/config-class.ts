@@ -254,6 +254,14 @@ export class Config {
 	public static readonly phaserFreqRange: number = 32;
 	public static readonly phaserMinFreq: number = 8.0;
 	public static readonly phaserMaxFreq: number = 20000.0;
+	public static readonly compressorThresholdRange: number = 32;
+	public static readonly compressorThresholdStepDb: number = 1.5;
+	public static readonly compressorRatios: ReadonlyArray<number> = [
+		1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0,
+	];
+	public static readonly compressorAttackRange: number = 16;
+	public static readonly compressorReleaseRange: number = 16;
+	public static readonly compressorSyncBeats: ReadonlyArray<number> = [0, 2, 1, 0.5, 0.25];
 	public static readonly phaserMinStages: number = 0;
 	public static readonly phaserMaxStages: number = 32;
 	public static readonly beatsPerBarMin: number = 1;
@@ -2108,6 +2116,7 @@ export class Config {
 		"phaser",
 		"",
 		"invert wave",
+		"compressor",
 	];
 	public static readonly effectOrder: ReadonlyArray<EffectType> = [
 		EffectType.panning,
@@ -2126,6 +2135,7 @@ export class Config {
 		EffectType.ringModulation,
 		EffectType.phaser,
 		EffectType.invertWave,
+		EffectType.compressor,
 		EffectType.noteRange,
 	];
 	public static readonly noteSizeMax: number = 6;

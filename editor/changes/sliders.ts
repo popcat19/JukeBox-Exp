@@ -314,6 +314,51 @@ export class ChangePhaserStages extends ChangeInstrumentSlider {
 	}
 }
 
+export class ChangeCompressorThreshold extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.compressorThreshold = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCompressorRatio extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.compressorRatio = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCompressorAttack extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.compressorAttack = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCompressorRelease extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.compressorRelease = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
+export class ChangeCompressorSync extends ChangeInstrumentSlider {
+	constructor(doc: SongDocument, oldValue: number, newValue: number) {
+		super(doc);
+		this._instrument.compressorSync = newValue;
+		doc.notifier.changed();
+		if (oldValue !== newValue) this._didSomething();
+	}
+}
+
 export class ChangeStringSustain extends ChangeInstrumentSlider {
 	constructor(doc: SongDocument, oldValue: number, newValue: number) {
 		super(doc);

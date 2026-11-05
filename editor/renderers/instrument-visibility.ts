@@ -16,6 +16,7 @@ import {
 	effectsIncludeBitcrusher,
 	effectsIncludeChord,
 	effectsIncludeChorus,
+	effectsIncludeCompressor,
 	effectsIncludeDetune,
 	effectsIncludeDistortion,
 	effectsIncludeEcho,
@@ -246,6 +247,21 @@ export interface InstrumentVisibilityRefs {
 	phaserStagesRow: HTMLElement;
 	phaserStagesSlider: Slider;
 	phaserStagesInputBox: HTMLInputElement;
+	compressorThresholdRow: HTMLElement;
+	compressorThresholdSlider: Slider;
+	compressorThresholdInputBox: HTMLInputElement;
+	compressorRatioRow: HTMLElement;
+	compressorRatioSlider: Slider;
+	compressorRatioInputBox: HTMLInputElement;
+	compressorAttackRow: HTMLElement;
+	compressorAttackSlider: Slider;
+	compressorAttackInputBox: HTMLInputElement;
+	compressorReleaseRow: HTMLElement;
+	compressorReleaseSlider: Slider;
+	compressorReleaseInputBox: HTMLInputElement;
+	compressorSyncRow: HTMLElement;
+	compressorSyncSlider: Slider;
+	compressorSyncInputBox: HTMLInputElement;
 
 	invertWaveRow: HTMLElement;
 
@@ -751,6 +767,30 @@ export function applyInstrumentVisibility(
 		refs.phaserFreqRow.style.display = "none";
 		refs.phaserFeedbackRow.style.display = "none";
 		refs.phaserStagesRow.style.display = "none";
+	}
+
+	if (effectsIncludeCompressor(instrument.effects)) {
+		refs.compressorThresholdRow.style.display = "";
+		refs.compressorThresholdSlider.updateValue(instrument.compressorThreshold);
+		refs.compressorThresholdInputBox.value = `${instrument.compressorThreshold}`;
+		refs.compressorRatioRow.style.display = "";
+		refs.compressorRatioSlider.updateValue(instrument.compressorRatio);
+		refs.compressorRatioInputBox.value = `${instrument.compressorRatio}`;
+		refs.compressorAttackRow.style.display = "";
+		refs.compressorAttackSlider.updateValue(instrument.compressorAttack);
+		refs.compressorAttackInputBox.value = `${instrument.compressorAttack}`;
+		refs.compressorReleaseRow.style.display = "";
+		refs.compressorReleaseSlider.updateValue(instrument.compressorRelease);
+		refs.compressorReleaseInputBox.value = `${instrument.compressorRelease}`;
+		refs.compressorSyncRow.style.display = "";
+		refs.compressorSyncSlider.updateValue(instrument.compressorSync);
+		refs.compressorSyncInputBox.value = `${instrument.compressorSync}`;
+	} else {
+		refs.compressorThresholdRow.style.display = "none";
+		refs.compressorRatioRow.style.display = "none";
+		refs.compressorAttackRow.style.display = "none";
+		refs.compressorReleaseRow.style.display = "none";
+		refs.compressorSyncRow.style.display = "none";
 	}
 
 	if (effectsIncludeInvertWave(instrument.effects)) {

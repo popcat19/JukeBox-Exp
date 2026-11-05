@@ -331,6 +331,29 @@ export class SongEditor
 	private readonly _phaserStagesRow: HTMLDivElement = this._effectsPanel.phaserStagesRow;
 	private readonly _phaserStagesInputBox: HTMLInputElement =
 		this._effectsPanel.phaserStagesWidget.inputBox;
+	private readonly _compressorThresholdSlider: Slider =
+		this._effectsPanel.compressorThresholdSlider;
+	private readonly _compressorThresholdRow: HTMLDivElement =
+		this._effectsPanel.compressorThresholdRow;
+	private readonly _compressorThresholdInputBox: HTMLInputElement =
+		this._effectsPanel.compressorThresholdWidget.inputBox;
+	private readonly _compressorRatioSlider: Slider = this._effectsPanel.compressorRatioSlider;
+	private readonly _compressorRatioRow: HTMLDivElement = this._effectsPanel.compressorRatioRow;
+	private readonly _compressorRatioInputBox: HTMLInputElement =
+		this._effectsPanel.compressorRatioWidget.inputBox;
+	private readonly _compressorAttackSlider: Slider = this._effectsPanel.compressorAttackSlider;
+	private readonly _compressorAttackRow: HTMLDivElement = this._effectsPanel.compressorAttackRow;
+	private readonly _compressorAttackInputBox: HTMLInputElement =
+		this._effectsPanel.compressorAttackWidget.inputBox;
+	private readonly _compressorReleaseSlider: Slider = this._effectsPanel.compressorReleaseSlider;
+	private readonly _compressorReleaseRow: HTMLDivElement =
+		this._effectsPanel.compressorReleaseRow;
+	private readonly _compressorReleaseInputBox: HTMLInputElement =
+		this._effectsPanel.compressorReleaseWidget.inputBox;
+	private readonly _compressorSyncSlider: Slider = this._effectsPanel.compressorSyncSlider;
+	private readonly _compressorSyncRow: HTMLDivElement = this._effectsPanel.compressorSyncRow;
+	private readonly _compressorSyncInputBox: HTMLInputElement =
+		this._effectsPanel.compressorSyncWidget.inputBox;
 	private readonly _rhythmSelect: HTMLSelectElement = this._songSettingsPanel.rhythmSelect;
 	private readonly _pitchedPresetSelect: HTMLButtonElement = (() => {
 		const btn = buildPresetButton("pitchPresetSelect");
@@ -1875,6 +1898,11 @@ export class SongEditor
 		this._phaserFreqRow,
 		this._phaserFeedbackRow,
 		this._phaserStagesRow,
+		this._compressorThresholdRow,
+		this._compressorRatioRow,
+		this._compressorAttackRow,
+		this._compressorReleaseRow,
+		this._compressorSyncRow,
 		this._invertWaveRow,
 		this._upperNoteLimitRow,
 		this._lowerNoteLimitRow,
@@ -3604,6 +3632,21 @@ export class SongEditor
 			phaserStagesRow: this._phaserStagesRow,
 			phaserStagesSlider: this._phaserStagesSlider,
 			phaserStagesInputBox: this._phaserStagesInputBox,
+			compressorThresholdRow: this._compressorThresholdRow,
+			compressorThresholdSlider: this._compressorThresholdSlider,
+			compressorThresholdInputBox: this._compressorThresholdInputBox,
+			compressorRatioRow: this._compressorRatioRow,
+			compressorRatioSlider: this._compressorRatioSlider,
+			compressorRatioInputBox: this._compressorRatioInputBox,
+			compressorAttackRow: this._compressorAttackRow,
+			compressorAttackSlider: this._compressorAttackSlider,
+			compressorAttackInputBox: this._compressorAttackInputBox,
+			compressorReleaseRow: this._compressorReleaseRow,
+			compressorReleaseSlider: this._compressorReleaseSlider,
+			compressorReleaseInputBox: this._compressorReleaseInputBox,
+			compressorSyncRow: this._compressorSyncRow,
+			compressorSyncSlider: this._compressorSyncSlider,
+			compressorSyncInputBox: this._compressorSyncInputBox,
 			invertWaveRow: this._invertWaveRow,
 			upperNoteLimitRow: this._upperNoteLimitRow,
 			upperNoteLimitInputBox: this._upperNoteLimitInputBox,
