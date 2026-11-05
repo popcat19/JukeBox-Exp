@@ -19,9 +19,19 @@ else
 	ESBUILD="$RUNX esbuild"
 fi
 
-bash "$(dirname "$0")/build-wasm.sh"
-
 PORT="${PORT:-4000}"
+
+if holder=$(ss -ltnpH "sport = :$PORT" 2>/dev/null | head -n1) && [ -n "$holder" ]; then
+	echo "Port $PORT is already in use, a previous dev stack is likely still running:" >&2
+	echo "  $holder" >&2
+	echo "Stop it first (pkill -f 'concurrently.*dev-server-sab') or set PORT=<other>." >&2
+	exit 1
+fi
+
+# Children (esbuild watchers, server) must not outlive this script.
+trap 'trap - EXIT TERM INT HUP; kill 0 2>/dev/null || true' EXIT TERM INT HUP
+
+bash "$(dirname "$0")/build-wasm.sh"
 
 open_browser_path=/index_debug.html
 for arg in "$@"; do

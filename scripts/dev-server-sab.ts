@@ -7,6 +7,7 @@
 // - Sets Cross-Origin-Opener-Policy: same-origin
 // - Sets Cross-Origin-Embedder-Policy: require-corp
 // - No live-reload (multi-tab safe)
+// - Sends Cache-Control: no-store so reloads never reuse stale bundles
 //
 // Usage: bun scripts/dev-server-sab.ts [port]
 
@@ -32,6 +33,7 @@ Bun.serve({
 			headers: {
 				"Cross-Origin-Opener-Policy": "same-origin",
 				"Cross-Origin-Embedder-Policy": "require-corp",
+				"Cache-Control": "no-store",
 			},
 		});
 	},

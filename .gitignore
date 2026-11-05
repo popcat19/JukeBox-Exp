@@ -42,6 +42,7 @@ pm2handler.cjs
 /website/foolish_editor.min.js
 /website/beepbox_editor.js
 /website/beepbox_synth.js
+/website/beepbox_synth_worklet.js
 /website/player/beepbox_player.js
 /website/player/foolish_player.js
 /website/**/*.js.map
