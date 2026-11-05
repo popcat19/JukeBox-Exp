@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
+    <!-- CDN for jQuery and select2 -->
+    <script
+      src="patch_notes_files/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <link href="patch_notes_files/select2.min.css" rel="stylesheet" />
+    <script src="patch_notes_files/select2.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What's on Bluesky?</title>
+    <meta name="application-name" content="Bluesky feed" />
+    <meta name="apple-mobile-web-app-title" content="Bluesky feed" />
+    <meta name="description" content="Check out the latest posts on Bluesky" />
+    <meta
+      name="keywords"
+      content="chiptune, instrumental, music, song, melody, composition, tool, free, square wave, NES, NSF, JummBox, jummbox, BeepBox, beepbox, GoldBox, goldBox"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#444" />
+    <meta name="msapplication-TileColor" content="#dba600" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../icon_32.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../icon_32.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link href="patch_notes_files/css.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./ancillary.css" />
+    <link rel="stylesheet" href="./bluesky.css" />
+  </head>
+  <body class="page-bluesky">
+    <main>
+      <aside class="bsky-column">
+        <h2>Shared on Bluesky:</h2>
+        <div>
+          <!-- <a class="bsky-timeline" data-width="300" data-height="2000" data-link-color="#9988ff" data-chrome="noheader nofooter transparent" data-dnt="true" data-theme="dark" href="https://twitter.com/beepboxco?ref_src=twsrc%5Etfw" target="_blank">Songs retweeted by @beepboxco</a> -->
+          <bsky-embed
+            feed="at://did:plc:mbrx5fkqsdgk5l2dfhygecm6/app.bsky.feed.generator/aaabsv7gjrgl2"
+            mode="dark"
+            link-target="_blank"
+            link-image="false"
+            limit="5"
+            load-more="true"
+            disable-styles="false"
+            custom-styles="a.mt-4.rounded-md.border.border-slate-300.block {display: none;} .flex > div { max-width: 90%; } .whitespace-pre-wrap { word-wrap: break-word;}"
+          >
+          </bsky-embed>
+          <script async>
+            // only load bsky-embed if it's actually visible
+            // (the downside of doing this is that you have to manually reload the page to load/unload the library)
+            if (window.localStorage.getItem("showDescription") != "false") {
+              const bsky_script = document.createElement("script");
+
+              bsky_script.src =
+                "https://cdn.jsdelivr.net/npm/bsky-embed@0.2.2/dist/bsky-embed.es.min.js";
+              bsky_script.type = "module";
+
+              document.head.appendChild(bsky_script);
+            }
+          </script>
+          <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/bsky-embed/dist/bsky-embed.es.js" async></script> -->
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>

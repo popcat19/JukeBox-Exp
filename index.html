@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/x-icon" href="./assets/icons/favicon.ico" />
+    <!-- CDN for jQuery and select2 -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.7/js/select2.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JukeBox</title>
+    <meta name="application-name" content="JukeBox" />
+    <meta name="apple-mobile-web-app-title" content="JukeBox" />
+    <meta
+      name="description"
+      content="JukeBox-Exp is a fork of JukeBox, which is a mod of Slarmoo's Box that aims to add a crap ton of presets."
+    />
+    <meta
+      name="keywords"
+      content="chiptune, instrumental, music, song, melody, composition, tool, free, online, square wave, NES, NSF, jukebox, ultrabox, beepbox, jummbox, pandorasbox, modbox, sandbox, goldbox, wackybox, todbox, slarmoo's box"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#ad7760" />
+    <meta name="msapplication-TileColor" content="#ad7760" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta
+      property="og:image"
+      content="https://jukeebox.github.io/icon_shadow_192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./assets/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/icons/icon_32.png"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <!-- Self-hosted Google Fonts (Fredoka, Fira Code) — no CDN dependency -->
+    <link rel="stylesheet" href="./assets/fonts/google/fonts.css" />
+    <link rel="stylesheet" href="./common.css" />
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body id="secondImage">
+    <script>
+      const image = localStorage.getItem("customTheme2");
+      const el = document.getElementById("secondImage");
+      if (image != null && image !== "null" && image !== "undefined") {
+        el.style.backgroundImage = "url(" + image + ")";
+        el.style.backgroundRepeat = "repeat";
+      }
+    </script>
+    <div id="beepboxEditorContainer">
+      <noscript>
+        Sorry, JukeBox requires a JavaScript-enabled browser.
+      </noscript>
+    </div>
+    <div id="text-content">
+      <header>
+        <h1 class="sr-only">JukeBox</h1>
+      </header>
+      <main>
+        <section>
+          <h1>
+            <font>JukeBox-Exp</font>
+            <span id="goldboxPlant" class="goldbox-plant"></span>
+          </h1>
+
+          <p id="introduction">
+            JukeBox-exp is a fork of JukeBox, which is a mod of Slarmoo's Box
+            that aims to add a crap ton of presets. <br />
+            (see <a href="./manual/credits.html">credits</a>).
+          </p>
+          <div class="donation">
+            BeepBox is a passion project, and will always be free to use. If you
+            find it valuable and have the means, please feel free to show your
+            gratitude to the original creator of Beepbox here:
+            <form
+              action="https://www.paypal.com/cgi-bin/webscr"
+              method="post"
+              target="_blank"
+            >
+              <input type="hidden" name="cmd" value="_donations" />
+              <input type="hidden" name="business" value="QZJTX9GRYEV9N" />
+              <input type="hidden" name="currency_code" value="USD" />
+              <input type="submit" name="submit" value="Paypal" />
+            </form>
+            <br /><br />
+            Additionally, Slarmoo's Box, which is the basis of JukeBox, takes a
+            lot of time to make and update. If you have found it valuable and
+            are able to do so, please consider donating to Slarmoo here:
+            <form
+              action="https://www.paypal.com/donate/?hosted_button_id=BMLD7HPKFR6NG"
+              method="post"
+              target="_blank"
+            >
+              <input type="submit" name="submit" value="Paypal" />
+            </form>
+            <br /><br />
+            <section>
+              <h2>About</h2>
+              <p>
+                JukeBox-Exp is an unofficial conceptual fork of JukeBox,
+                originally developed by CoolTasDude, is a mod of Slarmoo's Box
+                which is a mod of UltraBox which ported features from Pandora's
+                Box into GoldBox which are both mods of JummBox which is a mod
+                of BeepBox.
+              </p>
+              <p>
+                JukeBox-Exp does not claim ownership over songs created with it,
+                so original songs belong to their authors.
+              </p>
+              <p>
+                Neither JukeBox-Exp nor its creators assume responsibility for
+                any copyrighted material played on JukeBox-Exp. No songs are
+                ever received, recorded, or distributed by JukeBox-Exp's
+                servers. All song data is contained in the URL after the hash
+                (#) mark, and JukeBox-Exp running inside your browser converts
+                that data into sound waves.
+              </p>
+              <p>
+                JukeBox-Exp does not collect, track, or share any user data. Its
+                full source is available in the GitHub repository.
+              </p>
+            </section>
+          </div>
+        </section>
+        <nav class="link-cards" aria-label="JukeBox links">
+          <a
+            class="link-card link-card-manual"
+            href="./manual/introduction.html"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">JukeBox Manual</div>
+          </a>
+          <p></p>
+          <a
+            class="link-card link-card-forms"
+            href="https://forms.gle/B29T3gCRHB6srueB8"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">JukeBox Preset Submission Form</div>
+          </a>
+          <p></p>
+          <a
+            class="link-card link-card-discord"
+            href="https://discord.gg/xSs9nABmP5"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">JukeBox Community Discord</div>
+          </a>
+          <p></p>
+          <a
+            class="link-card link-card-github"
+            href="https://github.com/JukeeBox/JukeBox_TypeScript"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">JukeBox Source Code</div>
+          </a>
+          <p></p>
+          <a
+            class="link-card link-card-launchpad"
+            href="https://beepbox-launchpad.github.io"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">BeepBox Launchpad</div>
+          </a>
+        </nav>
+        <p class="landing-caption">
+          Launchpad made by Slarmoo, Choptop84, and HappyLemonLime
+        </p>
+        <nav class="link-cards" aria-label="JukeBox social">
+          <a
+            class="link-card link-card-bluesky"
+            href="./bluesky"
+            target="_blank"
+            rel="noopener"
+          >
+            <div class="link-card-icon"></div>
+            <div class="link-card-label">Music on Bluesky</div>
+          </a>
+        </nav>
+        <br /><br />
+      </main>
+    </div>
+    <footer>
+      <p class="footertext">
+        JukeBox — <a href="https://jukeebox.github.io">Home</a>
+      </p>
+    </footer>
+    <script type="text/javascript" src="./index.js"></script>
+  </body>
+</html>

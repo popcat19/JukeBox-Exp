@@ -1,0 +1,91 @@
+/* bluesky.css */
+/*
+ * Purpose: Bluesky feed embed page styles
+ *
+ * Moved from inline <style> block in Bluesky.html.
+ * Common page chrome lives in ancillary.css.
+ */
+
+body {
+    background-image: url("../assets/audio/diamondsbg.gif") !important;
+    background-position: center;
+    background-repeat: repeat;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: -o-crisp-edges !important;
+    image-rendering: pixelated !important;
+    image-rendering: optimizeSpeed !important;
+    min-height: 100vh;
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    -webkit-text-stroke-width: 0;
+}
+
+.centerDiv {
+    margin: 0px auto;
+}
+
+.donation form {
+    display: inline;
+}
+
+.donation input[type="submit"] {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--link-accent, #98f);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.twitter-column {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.bsky-column {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    border-image-source: url("../assets/images/beepbox_pixel_border.png");
+    padding: 0.5em;
+    border-image-slice: 4 fill;
+    border-image-width: 8px;
+    border-image-repeat: stretch;
+    padding: 12px;
+    padding-top: 0px;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: -o-crisp-edges !important;
+    image-rendering: pixelated !important;
+    image-rendering: optimizeSpeed !important;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+@media (min-width: 711px) {
+    .column-container {
+        width: 710px;
+        display: flex;
+        gap: 25px;
+    }
+
+    .instructions-column {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 710px) {
+    .column-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
