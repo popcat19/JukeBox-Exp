@@ -2,7 +2,7 @@
 	"version": 1,
 	"counts": {
 		"eslint": 4897,
-		"biome": 298
+		"biome": 297
 	},
 	"groups": [
 		{
@@ -69,11 +69,6 @@
 			"key": "biome:editor/io/midi-parser.ts",
 			"count": 1,
 			"hash": "ab3c5977bb47e3920b77724220931c82b7afc49c83a8445d1471e999b39b7aa6"
-		},
-		{
-			"key": "biome:editor/io/midi.ts",
-			"count": 1,
-			"hash": "d8ca09f0ed2d0e549bfae17816414b8e888203a9fc1c73c8cc0a8d22e951ae6a"
 		},
 		{
 			"key": "biome:editor/io/song-recovery.ts",

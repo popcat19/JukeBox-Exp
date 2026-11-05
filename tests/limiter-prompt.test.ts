@@ -4,6 +4,7 @@
 
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
+import { Window } from "happy-dom";
 import type { PromptEditorRefs } from "../editor/core/prompt-manager";
 import { closePromptFromContextMenu } from "../editor/core/prompt-manager";
 import { createPromptPaneOwner } from "../editor/navigator/prompt-pane-owner";
@@ -278,8 +279,7 @@ describe("LimiterPrompt", () => {
 	test("moves animation ownership and rejects a stale owner-window frame", () => {
 		const doc = new SongDocument();
 		const mainFrames = installFrames();
-		const DetachedWindow = window.constructor as unknown as { new (): Window };
-		const detached = new DetachedWindow();
+		const detached = new Window();
 		const detachedOwner = detached as unknown as globalThis.Window;
 		const detachedFrames = installFrames(detachedOwner);
 		const prompt = new LimiterPrompt(doc, editorRefs());

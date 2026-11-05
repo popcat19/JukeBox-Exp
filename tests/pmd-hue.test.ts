@@ -157,11 +157,19 @@ describe("PMD hue policy", () => {
 	});
 
 	test("migrates stale PMD light storage on persistence", () => {
-		window.localStorage.setItem("pmdDark", "0");
-		ColorConfig.pmdDark = false;
-		ColorConfig.persistPMD();
-		expect(ColorConfig.pmdDark).toBeTrue();
-		expect(window.localStorage.getItem("pmdDark")).toBe("1");
+		const g = globalThis as unknown as { window?: { localStorage: FakeStorage } };
+		const previous = g.window;
+		const storage = new FakeStorage();
+		g.window = { localStorage: storage };
+		try {
+			storage.setItem("pmdDark", "0");
+			ColorConfig.pmdDark = false;
+			ColorConfig.persistPMD();
+			expect(ColorConfig.pmdDark).toBeTrue();
+			expect(storage.getItem("pmdDark")).toBe("1");
+		} finally {
+			g.window = previous;
+		}
 	});
 
 	test("keeps the light palette as dormant compatibility data", () => {
