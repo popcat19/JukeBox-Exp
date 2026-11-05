@@ -25,6 +25,7 @@ Purpose: bun:test test files covering editor, synth, and shared modules.
 - `navigator-dock.test.ts`, Shared PromptDock edge snap, padding, undock, cleanup, mobile fallback, and prompt regression behavior
 - `stress-pane-lifecycle.test.ts`, Behavioral fake-frame lifecycle coverage for Navigator stress panes and LimiterPrompt cleanup
 - `notes.test.ts`, Unit tests for note and pattern data structures
+- `note-mutation-fuzz.test.ts`, Randomized invariant checks for note pin mutations
 - `pattern-editor-contract.test.ts`, Structural contract tests for pattern-editor.ts rendering invariants (stale canvas path, SVG/canvas y-center alignment)
 - `loop-editor-contract.test.ts`, Structural contract tests for loop-editor.ts UI invariants (CSS class for disabled state, no inline opacity conflict) and song-editor.ts focus-steal listeners (mouseup blur buttons, keydown intercept Space on button/select)
 - `limiter-prompt.test.ts`, Behavioral, accessibility, transaction, lifecycle, and responsive CSS contracts for LimiterPrompt

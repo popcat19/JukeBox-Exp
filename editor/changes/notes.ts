@@ -1184,10 +1184,11 @@ export class ChangeNoteLength extends ChangePins {
 			}
 		}
 
-		if (pushLastPin)
-			this._newPins.push(
-				makeNotePin(this._oldPins[i].interval, truncEnd, this._oldPins[i].size),
-			);
+		if (pushLastPin) {
+			// Extending past the last pin holds that pin's values.
+			const endPin: NotePin = this._oldPins[Math.min(i, this._oldPins.length - 1)];
+			this._newPins.push(makeNotePin(endPin.interval, truncEnd, endPin.size));
+		}
 
 		this._finishSetup(continuesLastPattern);
 	}

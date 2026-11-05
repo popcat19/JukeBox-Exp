@@ -4147,7 +4147,13 @@ export class PatternEditor {
 				if (newStart < 0) newStart = 0;
 				if (newStart === note.start) return;
 			}
-			this._doc.record(new ChangeNoteLength(this._doc, note, newStart, newEnd));
+			if (this._pattern == null) return;
+			const sequence: ChangeSequence = new ChangeSequence();
+			sequence.append(
+				new ChangeNoteTruncate(this._doc, this._pattern, newStart, newEnd, note),
+			);
+			sequence.append(new ChangeNoteLength(this._doc, note, newStart, newEnd));
+			this._doc.record(sequence);
 			this._doc.notifier.notifyWatchers();
 			this._updateCursorStatus();
 			this._updatePreview();
