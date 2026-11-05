@@ -9,13 +9,13 @@
 import type { Instrument } from "../instruments";
 import opl3Module from "../modules/opl3/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildOpl3Source } from "../synthesis/opl3";
+import type { PluginHost } from "./host";
 
 const cache: Map<string, Function> = new Map();
 
-function getSynthFunction(instrument: Instrument, synth: typeof Synth): Function {
+function getSynthFunction(instrument: Instrument, synth: PluginHost): Function {
 	const fingerprint: string = `${instrument.opl3Algorithm ?? 0}_${instrument.feedbackAmplitude}`;
 	if (!cache.has(fingerprint)) {
 		const source: string = buildOpl3Source(instrument);

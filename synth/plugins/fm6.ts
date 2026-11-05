@@ -9,13 +9,13 @@
 import type { Instrument } from "../instruments";
 import fm6Module from "../modules/fm6/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildFm6Source } from "../synthesis/fm6";
+import type { PluginHost } from "./host";
 
 const cache: Map<string, Function> = new Map();
 
-function getSynthFunction(instrument: Instrument, synth: typeof Synth): Function {
+function getSynthFunction(instrument: Instrument, synth: PluginHost): Function {
 	const fingerprint: string = `${instrument.customAlgorithm.name}_${instrument.customFeedbackType.name}`;
 	if (!cache.has(fingerprint)) {
 		const source: string = buildFm6Source(instrument);

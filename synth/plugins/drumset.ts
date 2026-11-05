@@ -10,16 +10,16 @@ import { InstrumentState } from "../instrument-state";
 import type { Instrument } from "../instruments";
 import drumsetModule from "../modules/drumset/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildDrumSource } from "../synthesis/drum";
 import type { Tone } from "../tone";
 import { SpectrumWave } from "../waves";
+import { getPluginHost, type PluginHost, PluginHostInstance } from "./host";
 
 const functionCache: Function[] = [];
 
 function drumsetSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	runLength: number,
 	tone: Tone,
@@ -31,7 +31,7 @@ function drumsetSynth(
 		const source: string = buildDrumSource(voiceCount);
 		fn = new Function("Config", "Synth", "InstrumentState", source)(
 			Config,
-			Synth,
+			getPluginHost(),
 			InstrumentState,
 		);
 		functionCache[instrumentState.unisonVoices] = fn;
@@ -40,7 +40,7 @@ function drumsetSynth(
 }
 
 registerModuleAsPlugin(drumsetModule, InstrumentType.drumset, ["drumset"], {
-	getSynthFunction: (_instrument: Instrument, _synth: typeof Synth) => drumsetSynth,
+	getSynthFunction: (_instrument: Instrument, _synth: PluginHost) => drumsetSynth,
 	initialize: (instrument: Instrument) => {
 		instrument.chord = Config.chords.dictionary.simultaneous.index;
 		for (let i = 0; i < Config.drumCount; i++) {

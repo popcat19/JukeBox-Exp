@@ -9,11 +9,11 @@
 import type { Instrument } from "../instruments";
 import modModule from "../modules/mod/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
+import type { PluginHost } from "./host";
 
 registerModuleAsPlugin(modModule, InstrumentType.mod, [], {
-	getSynthFunction: (_instrument: Instrument, synth: typeof Synth) => synth.runModSynth,
+	getSynthFunction: (_instrument: Instrument, synth: PluginHost) => synth.runModSynth,
 	initialize: (instrument: Instrument) => {
 		instrument.transition = 0;
 		instrument.vibrato = 0;

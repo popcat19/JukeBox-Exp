@@ -9,13 +9,13 @@
 import type { Instrument } from "../instruments";
 import fmModule from "../modules/fm/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildFmSource } from "../synthesis/fm";
+import type { PluginHost } from "./host";
 
 const cache: Map<string, Function> = new Map();
 
-function getSynthFunction(instrument: Instrument, synth: typeof Synth): Function {
+function getSynthFunction(instrument: Instrument, synth: PluginHost): Function {
 	const fingerprint: string = `${instrument.algorithm}_${instrument.feedbackType}`;
 	if (!cache.has(fingerprint)) {
 		const source: string = buildFmSource(instrument);

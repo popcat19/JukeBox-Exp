@@ -10,15 +10,15 @@ import { InstrumentState } from "../instrument-state";
 import type { Instrument } from "../instruments";
 import pickedStringModule from "../modules/picked-string/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildPickedStringSource } from "../synthesis/picked-string";
 import type { Tone } from "../tone";
+import { getPluginHost, type PluginHost, PluginHostInstance } from "./host";
 
 const functionCache: Function[] = Array(3).fill(undefined);
 
 function pickedStringSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	roundedSamplesPerTick: number,
 	tone: Tone,
@@ -28,7 +28,7 @@ function pickedStringSynth(
 	let fn: Function = functionCache[voiceCount];
 	if (fn === undefined) {
 		const source: string = buildPickedStringSource(voiceCount);
-		fn = new Function("Config", "Synth", source)(Config, Synth);
+		fn = new Function("Config", "Synth", source)(Config, getPluginHost());
 		functionCache[voiceCount] = fn;
 	}
 	fn(synth, bufferIndex, roundedSamplesPerTick, tone, instrumentState);
@@ -39,7 +39,7 @@ registerModuleAsPlugin(
 	InstrumentType.pickedString,
 	["harmonics", "stringSustain"],
 	{
-		getSynthFunction: (_instrument: Instrument, _synth: typeof Synth) => pickedStringSynth,
+		getSynthFunction: (_instrument: Instrument, _synth: PluginHost) => pickedStringSynth,
 		initialize: (instrument: Instrument) => {
 			instrument.chord = Config.chords.dictionary.strum.index;
 			instrument.harmonicsWave.reset();

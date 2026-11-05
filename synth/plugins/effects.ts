@@ -7,9 +7,9 @@
 // - Exported directly for use in synth.ts channel-level loop
 // - Different calling convention than per-instrument plugins
 
-import { Synth } from "../synth";
 import { Config } from "../synth-config";
 import { buildEffectsSource } from "../synthesis/effects";
+import type { PluginHost } from "./host";
 
 const cache: Function[] = Array(1 << 7).fill(undefined);
 
@@ -26,7 +26,7 @@ export function getEffectsSynthFunction(
 	usesPhaser: boolean,
 	usesInvertWave: boolean,
 	signature: number,
-	synth: typeof Synth,
+	synth: PluginHost,
 ): Function {
 	let fn: Function = cache[signature];
 	if (fn === undefined) {

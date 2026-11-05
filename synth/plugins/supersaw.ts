@@ -10,14 +10,14 @@
 import type { Instrument } from "../instruments";
 import supersawModule from "../modules/supersaw/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildSupersawSource } from "../synthesis/supersaw";
+import { getPluginHost, type PluginHost, PluginHostInstance } from "./host";
 
 const functionCache: Function[] = Array(1).fill(undefined);
 
 function supersawSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	runLength: number,
 	tone: any,
@@ -27,13 +27,13 @@ function supersawSynth(
 	let fn: Function = functionCache[0];
 	if (fn === undefined) {
 		const source: string = buildSupersawSource(voiceCount);
-		fn = new Function("Config", "Synth", source)(Config, Synth);
+		fn = new Function("Config", "Synth", source)(Config, getPluginHost());
 		functionCache[0] = fn;
 	}
 	fn(synth, bufferIndex, runLength, tone, instrumentState);
 }
 
-function bridgedGetSynthFunction(_instrument: Instrument, _synth: typeof Synth): Function {
+function bridgedGetSynthFunction(_instrument: Instrument, _synth: PluginHost): Function {
 	return supersawSynth;
 }
 

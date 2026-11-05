@@ -8,8 +8,8 @@
 // - Allows future plugins to self-register without modifying synth.ts
 
 import type { Instrument } from "../instruments";
-import type { Synth } from "../synth";
 import type { InstrumentType } from "../synth-config";
+import type { PluginHost } from "./host";
 
 export type EditorRowName =
 	| "waveSelect"
@@ -33,6 +33,6 @@ export interface SynthPlugin {
 	initialize?: (instrument: Instrument) => void;
 	serialize?(instrument: Instrument, json: Record<string, any>): void;
 	deserialize?(instrument: Instrument, json: Record<string, any>): void;
-	getSynthFunction(instrument: Instrument, synth: typeof Synth): Function;
+	getSynthFunction(instrument: Instrument, synth: PluginHost): Function;
 	buildSource(instrument: Instrument, voiceCount?: number): string;
 }

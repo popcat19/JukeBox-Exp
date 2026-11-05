@@ -29,6 +29,7 @@ import { SynthModState } from "./mod-state";
 import type { Note, NotePin, Pattern } from "./notes";
 import { PickedString, type PickedStringEnv } from "./picked-string";
 import { getPlugin } from "./plugins";
+import { setPluginHost } from "./plugins/host";
 import { PostProcessingState } from "./post-processing";
 import {
 	computeBasePitchAndExpression,
@@ -5515,3 +5516,5 @@ export class Synth {
 export type { Chord, Dictionary, DictionaryArray, Envelope, Transition } from "./synth-config";
 // When compiling synth.ts as a standalone module named "beepbox", expose these classes as members to JavaScript:
 export { Config, EnvelopeType, FilterType, InstrumentType } from "./synth-config";
+
+setPluginHost(Synth);

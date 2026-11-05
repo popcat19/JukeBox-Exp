@@ -10,15 +10,15 @@ import { InstrumentState } from "../instrument-state";
 import type { Instrument } from "../instruments";
 import noiseModule from "../modules/noise/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, InstrumentType } from "../synth-config";
 import { buildNoiseSource } from "../synthesis/noise";
 import type { Tone } from "../tone";
+import { getPluginHost, type PluginHost, PluginHostInstance } from "./host";
 
 const functionCache: Function[] = [];
 
 function noiseSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	runLength: number,
 	tone: Tone,
@@ -28,14 +28,14 @@ function noiseSynth(
 	let fn: Function = functionCache[instrumentState.unisonVoices];
 	if (fn === undefined) {
 		const source: string = buildNoiseSource(voiceCount);
-		fn = new Function("Config", "Synth", source)(Config, Synth);
+		fn = new Function("Config", "Synth", source)(Config, getPluginHost());
 		functionCache[instrumentState.unisonVoices] = fn;
 	}
 	fn(synth, bufferIndex, runLength, tone, instrumentState);
 }
 
 registerModuleAsPlugin(noiseModule, InstrumentType.noise, ["noiseSelect"], {
-	getSynthFunction: (_instrument: Instrument, _synth: typeof Synth) => noiseSynth,
+	getSynthFunction: (_instrument: Instrument, _synth: PluginHost) => noiseSynth,
 	initialize: (instrument: Instrument) => {
 		instrument.chipNoise = 1;
 		instrument.chord = Config.chords.dictionary.arpeggio.index;

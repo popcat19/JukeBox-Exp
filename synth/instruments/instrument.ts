@@ -7,7 +7,7 @@
 // - Handles JSON serialization and preset management
 // - Supports FM, chip, noise, spectrum, drumset, and mod channel types
 
-import { getPlugin } from "../plugins";
+import { getPlugin } from "../plugins/registry";
 import {
 	type AutomationTarget,
 	type Chord,

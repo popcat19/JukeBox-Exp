@@ -12,16 +12,16 @@ import type { Instrument } from "../instruments";
 import chipModule from "../modules/chip/module";
 import customChipWaveModule from "../modules/custom-chip-wave/module";
 import { registerModuleAsPlugin } from "../socket/bridge";
-import { Synth } from "../synth";
 import { Config, effectsIncludeDistortion, InstrumentType } from "../synth-config";
 import { buildChipSource, buildLoopableChipSource } from "../synthesis/chip";
 import type { Tone } from "../tone";
+import { getPluginHost, type PluginHost, PluginHostInstance } from "./host";
 
 const chipFunctionCache: Function[] = [];
 const loopableChipFunctionCache: Function[] = Array(Config.unisonVoicesMax + 1).fill(undefined);
 
 function chipSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	roundedSamplesPerTick: number,
 	tone: Tone,
@@ -33,7 +33,7 @@ function chipSynth(
 		const chipSource: string = buildChipSource(voiceCount);
 		chipFunction = new Function("Config", "Synth", "effectsIncludeDistortion", chipSource)(
 			Config,
-			Synth,
+			getPluginHost(),
 			effectsIncludeDistortion,
 		);
 		chipFunctionCache[instrumentState.unisonVoices] = chipFunction;
@@ -42,7 +42,7 @@ function chipSynth(
 }
 
 function loopableChipSynth(
-	synth: Synth,
+	synth: PluginHostInstance,
 	bufferIndex: number,
 	roundedSamplesPerTick: number,
 	tone: Tone,
@@ -54,7 +54,7 @@ function loopableChipSynth(
 		const chipSource: string = buildLoopableChipSource(voiceCount);
 		chipFunction = new Function("Config", "Synth", "effectsIncludeDistortion", chipSource)(
 			Config,
-			Synth,
+			getPluginHost(),
 			effectsIncludeDistortion,
 		);
 		loopableChipFunctionCache[instrumentState.unisonVoices] = chipFunction;
@@ -62,7 +62,7 @@ function loopableChipSynth(
 	chipFunction(synth, bufferIndex, roundedSamplesPerTick, tone, instrumentState);
 }
 
-function getSynthFunction(instrument: Instrument, _synth: typeof Synth): Function {
+function getSynthFunction(instrument: Instrument, _synth: PluginHost): Function {
 	if (instrument.isUsingAdvancedLoopControls) {
 		return loopableChipSynth;
 	}
